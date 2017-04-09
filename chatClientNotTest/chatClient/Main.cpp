@@ -1,5 +1,4 @@
 ﻿// Siv3D March 2016
-# include <Siv3D.hpp>
 #include "ChatClient.h"
 class SoundPlayer
 {
@@ -85,5 +84,7 @@ void Main()
 		soundPlayer.update();
 
 		soundPlayer.drawVisualizer();
+
+		cc.Update();
 	}
 }
