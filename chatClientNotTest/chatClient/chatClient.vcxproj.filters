@@ -102,6 +102,18 @@
     <ClCompile Include="SceneChatWindow.cpp">
       <Filter>source file</Filter>
     </ClCompile>
+    <ClCompile Include="Login.cpp">
+      <Filter>source file</Filter>
+    </ClCompile>
+    <ClCompile Include="MyScene.cpp">
+      <Filter>source file</Filter>
+    </ClCompile>
+    <ClCompile Include="Lobby.cpp">
+      <Filter>source file</Filter>
+    </ClCompile>
+    <ClCompile Include="ChatMain.cpp">
+      <Filter>source file</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource.rc">
@@ -432,6 +444,18 @@
       <Filter>header file</Filter>
     </ClInclude>
     <ClInclude Include="SceneChatWindow.h">
+      <Filter>header file</Filter>
+    </ClInclude>
+    <ClInclude Include="Login.h">
+      <Filter>header file</Filter>
+    </ClInclude>
+    <ClInclude Include="MyScene.h">
+      <Filter>header file</Filter>
+    </ClInclude>
+    <ClInclude Include="Lobby.h">
+      <Filter>header file</Filter>
+    </ClInclude>
+    <ClInclude Include="ChatMain.h">
       <Filter>header file</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,17 +1,25 @@
 ﻿// Siv3D March 2016
 #include "ChatClient.h"
-
+#include "Login.h"
+#include "Lobby.h"
+#include "ChatMain.h"
 void Main()
 {
-	Window::Resize(1280, 720);
+	//Window::Resize(1280, 720);
 
 	Graphics::SetBackground(Color(70, 80, 170));
 
-	ChatClient cc;
+	Manager manager;
+	manager.add<chatClient::ChatMain>(L"ChatMain");
+	manager.add<chatClient::Login>(L"Login");
+	manager.add<chatClient::Lobby>(L"Lobby");
+
 
 	while (System::Update())
 	{
-
-		cc.Update();
+		if (!manager.updateAndDraw())
+		{
+			break;
+		}
 	}
 }

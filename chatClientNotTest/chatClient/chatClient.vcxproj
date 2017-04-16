@@ -165,8 +165,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ChatClient.cpp" />
+    <ClCompile Include="ChatMain.cpp" />
     <ClCompile Include="Define.cpp" />
+    <ClCompile Include="Lobby.cpp" />
+    <ClCompile Include="Login.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="MyScene.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -289,7 +293,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ChatClient.h" />
+    <ClInclude Include="ChatMain.h" />
     <ClInclude Include="Define.h" />
+    <ClInclude Include="Lobby.h" />
+    <ClInclude Include="Login.h" />
+    <ClInclude Include="MyScene.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="SceneChatWindow.h" />
     <ClInclude Include="SceneLogin.h" />
