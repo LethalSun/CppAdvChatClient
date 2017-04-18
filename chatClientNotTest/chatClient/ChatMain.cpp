@@ -9,6 +9,8 @@ void chatClient::ChatMain::init()
 	roomWindow.style.showBoxModel = true;
 	memberWindow.style.showBoxModel = true;
 	
+	
+
 	MakeRoomIndex();
 	
 	InitRoomWindow();
@@ -24,6 +26,106 @@ void chatClient::ChatMain::init()
 
 void chatClient::ChatMain::update()
 {
+	CheckRoomListButton();
+	if (m_RoomId > 0 && m_RoomId <= 7)
+	{
+		GetMemberList();
+		SetMemberList();
+		updateTextField();
+	}
+	else
+	{
+	}
+
+
+
+}
+
+int chatClient::ChatMain::updateTextField()
+{
+	if (m_RoomId > 0 && m_RoomId <= 7)
+	{
+		inputWindow.textArea(L"InputField").enabled = true;
+		showWindow.textArea(L"ShowField").enabled = true;
+		showWindow.textArea(L"ShowField").setText(m_PresentText);
+		if (inputWindow.textArea(L"InputField").hasChanged)
+		{
+			auto str = inputWindow.textArea(L"InputField")._get_text();
+			if (str.endsWith(L'\n'))
+			{
+				m_PresentText = m_PresentText + str;
+				inputWindow.textArea(L"InputField").setText(L"");
+			}
+		}
+	}
+	else
+	{
+		inputWindow.textArea(L"InputField").enabled = false;
+		showWindow.textArea(L"ShowField").enabled = false;
+		return 0;
+	}
+
+	
+	
+
+	return 0;
+}
+
+int chatClient::ChatMain::GetMemberList()
+{
+	//서버로 부터 멤버 리스트를 받아온다.
+	//변화가 있는지 확인을 해야됨
+	return 0;
+}
+
+int chatClient::ChatMain::SetMemberList()
+{
+	SetGuiText(memberWindow, L"Member1", L"person1");
+	SetGuiText(memberWindow, L"Member2", L"person2");
+	SetGuiText(memberWindow, L"Member3", L"person3");
+	SetGuiText(memberWindow, L"Member4", L"person4");
+	SetGuiText(memberWindow, L"Member5", L"person5");
+
+	return 0;
+}
+int chatClient::ChatMain::CheckRoomListButton()
+{
+	if (roomWindow.button(L"Room1Button").pushed)
+	{
+		//서버에서 받아오는 방번호를 받아오는 부분
+		m_RoomId = 1;
+	}
+	else if (roomWindow.button(L"Room2Button").pushed)
+	{
+		m_RoomId = 2;
+	}
+	else if (roomWindow.button(L"Room3Button").pushed)
+	{
+		m_RoomId = 3;
+	}
+	else if (roomWindow.button(L"Room4Button").pushed)
+	{
+		m_RoomId = 4;
+	}
+	else if (roomWindow.button(L"Room5Button").pushed)
+	{
+		m_RoomId = 5;
+	}
+	else if (roomWindow.button(L"Room6Button").pushed)
+	{
+		m_RoomId = 6;
+	}
+	else if (roomWindow.button(L"Room7Button").pushed)
+	{
+		m_RoomId = 7;
+	}
+	else if (roomWindow.button(L"LobbyButton").pushed)
+	{
+		m_RoomId = -1;
+		changeScene(L"Lobby");
+	}
+
+	return 0;
 }
 
 void chatClient::ChatMain::draw() const
@@ -36,7 +138,7 @@ int chatClient::ChatMain::InitRoomWindow()
 	roomWindow.setTitle(L"Room List");
 	for (int i = 0; i < 7; i++)
 	{
-		AddTextAndButton(roomWindow, i, L"Room1");
+		AddTextAndButton(roomWindow, i, L"Room");
 	}
 
 	roomWindow.add(L"Lobby", GUIText::Create(L"To Lobby"));
@@ -59,7 +161,7 @@ int chatClient::ChatMain::InitInputWindow()
 	
 	inputWindow.setTitle(L"Input");
 	
-	inputWindow.addln(L"InputField", GUITextArea::Create(2, 30));
+	inputWindow.addln(L"InputField", GUITextArea::Create(2, 30, none,false));
 
 	auto dWindowPos = inputWindow.getRect();
 	
@@ -74,7 +176,7 @@ int chatClient::ChatMain::InitShowWindow()
 
 	auto dPos = roomWindow.getRect();
 	showWindow.setTitle(L"Chat");
-	showWindow.addln(L"ShowField", GUITextArea::Create(25, 30));
+	showWindow.addln(L"ShowField", GUITextArea::Create(25, 30,none, false));
 	showWindow.setPos(Point(pos.x + dPos.w, 0));
 
 	return 1;
@@ -90,7 +192,7 @@ int chatClient::ChatMain::InitMemberWindow()
 
 	for (int i = 0; i < 5; i++)
 	{
-		AddText(memberWindow, i, L"member1");
+		AddText(memberWindow, i, L"Empty");
 	}
 
 	memberWindow.setPos(Point(0,pos.y + dPos.h));
@@ -143,4 +245,10 @@ int chatClient::ChatMain::MakeMemberIndex()
 	memberIndex[4] = L"Member5";
 
 	return 1;
+}
+
+int chatClient::ChatMain::SetGuiText(GUI gui, String textName, String newText)
+{
+	gui.text(textName).text = newText;
+	return 0;
 }
