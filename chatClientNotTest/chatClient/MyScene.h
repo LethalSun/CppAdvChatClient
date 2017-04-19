@@ -1,6 +1,7 @@
 #pragma once
 namespace chatClient
 {
+	class Network;
 	struct MyScene
 	{
 	public:
@@ -9,6 +10,10 @@ namespace chatClient
 
 		String loginID{};
 		String loginPassWord{};
+		Network* m_Network;
+		//TODO:Áö¿ï°Å
+		Font debugFont;
+		String str;
 	};
 
 }

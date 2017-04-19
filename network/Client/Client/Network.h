@@ -5,10 +5,16 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <thread>
+#include <mutex>
 #include <deque>
-
-namespace Client
+#include "Util.h"
+#include "Packet.h"
+#include "PacketID.h"
+namespace chatClient
 {
+	const int MaxPacketSize = 1024;
+
+#pragma pack(push,1)
 	struct PacketHeder
 	{
 		short Id;
@@ -25,6 +31,7 @@ namespace Client
 		short PacketBodySize = 0;
 		char* PacketData = nullptr;
 	};
+#pragma pack(pop)
 
 	enum class State
 	{
@@ -48,6 +55,10 @@ namespace Client
 
 		int Update();
 
+		int Send(const short, const short, char*);
+
+		PacketBody GetPacket();
+
 		int Release();
 
 	private:
@@ -58,9 +69,7 @@ namespace Client
 		std::deque<PacketBody> que;
 
 		std::thread m_th;
-
-		
-		int Send();
+		std::mutex m_Mutex;
 		int Recv(char*);
 		int RecvProc(const char * ,const int);
 		int AddPacketToQue(const short,const short,const char*);

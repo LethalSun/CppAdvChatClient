@@ -1,6 +1,10 @@
 #pragma once
+
+
+
 namespace chatClient
 {
+
 	class Login : public Manager::Scene
 	{
 	public:
@@ -12,8 +16,12 @@ namespace chatClient
 
 	private:
 		GUI loginWindow{ GUIStyle::Default };
+		
+		int SendLoginPack();
 
+		bool m_IsLogedIn = false;
 
+		Font font;
 	};
 
 }

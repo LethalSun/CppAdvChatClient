@@ -303,6 +303,11 @@
     <ClInclude Include="SceneLogin.h" />
     <ClInclude Include="SceneState.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\network\Client\Client\Client.vcxproj">
+      <Project>{e61f2c0f-4096-4f52-9d68-955252fe6269}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -36,6 +36,7 @@ void chatClient::Lobby::init()
 
 void chatClient::Lobby::update()
 {
+	m_data->debugFont(m_data->str).draw();
 	CheckSelectedChannelNum();
 
 	if (selectedChannelNum != -1)
