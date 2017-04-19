@@ -10,10 +10,10 @@ void Main()
 	Graphics::SetBackground(Color(70, 80, 170));
 
 	Manager manager;
-	manager.add<chatClient::ChatMain>(L"ChatMain");
+
 	manager.add<chatClient::Login>(L"Login");
 	manager.add<chatClient::Lobby>(L"Lobby");
-
+	manager.add<chatClient::ChatMain>(L"ChatMain");
 
 	while (System::Update())
 	{

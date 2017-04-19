@@ -4,13 +4,13 @@
 void chatClient::ChatMain::init()
 {
 	Window::Resize(1280, 720);
+	
+	/* 디버깅용 박스 출력 
 	showWindow.style.showBoxModel = true;
 	inputWindow.style.showBoxModel = true;
 	roomWindow.style.showBoxModel = true;
 	memberWindow.style.showBoxModel = true;
-	
-	
-
+	*/
 	MakeRoomIndex();
 	
 	InitRoomWindow();
