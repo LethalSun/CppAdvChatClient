@@ -4,6 +4,7 @@
 #include <array>
 #include <unordered_map>
 #include <vector>
+#include <string>
 #include "Define.h"
 #include "MyScene.h"
 

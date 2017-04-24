@@ -12,6 +12,11 @@ namespace chatClient
 		{
 			_snprintf_s(pszDest, destSize, _TRUNCATE, "%S", pszText);
 		}
+
+		static void AnsiToUnicode(const char* pszText, const int destSize, wchar_t* pszDest)
+		{
+			_snwprintf_s(pszDest, destSize, _TRUNCATE, L"%s", pszText);
+		}
 	};
 
 }

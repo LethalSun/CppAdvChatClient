@@ -52,6 +52,8 @@ namespace chatClient
 
 		GetPacket();
 
+		UpdateLobbyMember();
+
 		CheckRoomListButton();
 		if (m_RoomId > 0 && m_RoomId <= 7)
 		{
@@ -96,7 +98,7 @@ namespace chatClient
 	int ChatMain::GetPacket()
 	{
 		auto packet = m_data->m_Network->GetPacket();
-
+		//TODO: 언오디드 맵을 사용하는것이 좋음.
 		if (m_IsRoomListEnd == false && packet.PacketId == (short)PACKET_ID::LOBBY_ENTER_ROOM_LIST_RES)
 		{
 			auto roomList = (PktLobbyRoomListRes*)packet.PacketData;
@@ -112,6 +114,24 @@ namespace chatClient
 			m_IsRoomListEnd = roomList->IsEnd;
 			m_IsGeted == true;
 		}
+		else if (packet.PacketId = (short)PACKET_ID::LOBBY_ENTER_USER_NTF)
+		{
+			auto newMemberPacket = (PktLobbyNewUserInfoNtf*)packet.PacketData;
+			
+			char *memberId = newMemberPacket->UserID;
+			wchar_t wMemberId[16];
+			Util::AnsiToUnicode(memberId, 16, wMemberId);
+			
+			for (auto iter : m_members)
+			{
+				if (iter.IsEmpty == true)
+				{
+					iter.MenberId = wMemberId;
+					break;
+				}
+			}
+		}
+
 
 		return 0;
 	}
@@ -149,6 +169,18 @@ namespace chatClient
 			IsRoomSeted = true;
 		}
 
+		return 0;
+	}
+
+	int ChatMain::UpdateLobbyMember()
+	{
+
+		memberWindow.text(L"Member1").text=m_members[0].MenberId;
+		memberWindow.text(L"Member2").text=m_members[1].MenberId;
+		memberWindow.text(L"Member3").text=m_members[2].MenberId;
+		memberWindow.text(L"Member4").text=m_members[3].MenberId;
+		memberWindow.text(L"Member5").text=m_members[4].MenberId;
+		
 		return 0;
 	}
 
@@ -265,9 +297,9 @@ namespace chatClient
 
 	int ChatMain::InitMemberWindow()
 	{
-		auto pos = roomWindow.getPos();
+		auto pos = showWindow.getPos();
 
-		auto dPos = roomWindow.getRect();
+		auto dPos = showWindow.getRect();
 
 		memberWindow.setTitle(L"Member");
 
@@ -276,7 +308,7 @@ namespace chatClient
 			AddText(memberWindow, i, L"Empty");
 		}
 
-		memberWindow.setPos(Point(0, pos.y + dPos.h));
+		memberWindow.setPos(Point(pos.x+dPos.w, 0));
 
 		memberWindow.style.width = 250;
 

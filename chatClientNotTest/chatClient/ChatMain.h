@@ -9,6 +9,12 @@ namespace chatClient
 			short RoomUserCount;
 			String RoomTitle = L"empty";
 		};
+
+		struct MemberInfo
+		{
+			bool IsEmpty = true;
+			String MenberId;
+		};
 	public:
 		void init() override;
 		void update() override;
@@ -81,6 +87,11 @@ namespace chatClient
 		//받아온 방리스트를 띄운다.
 		int SetRoomList();
 		bool IsRoomSeted = false;
+
+		//로비에 들어온 사람이라면 방에 나중에 들어온 사람의 아이디를 받아온다
+		std::array<MemberInfo, 50> m_members;
+		int UpdateLobbyMember();
+
 	};
 }
 
