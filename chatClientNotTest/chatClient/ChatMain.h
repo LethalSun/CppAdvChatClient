@@ -92,6 +92,8 @@ namespace chatClient
 		std::array<MemberInfo, 50> m_members;
 		int UpdateLobbyMember();
 
+		//Ã¤ÆÃ
+		int SendChat
 	};
 }
 
