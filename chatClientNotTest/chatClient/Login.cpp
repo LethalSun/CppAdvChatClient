@@ -19,6 +19,7 @@ void chatClient::Login::init()
 
 	m_data->m_Network = new chatClient::Network();
 	m_data->m_Network->Init();
+	m_data->m_LobbyId = -1;
 }
 
 void chatClient::Login::update()
@@ -45,6 +46,8 @@ void chatClient::Login::update()
 	//맞으면
 	if (packet.PacketId == (short)PACKET_ID::LOGIN_IN_RES)
 	{
+		m_IsLogedIn = true;
+		//TODO: 로그인 확인용.
 		m_data->str = L"로그인 성공";
 		changeScene(L"Lobby");
 	}

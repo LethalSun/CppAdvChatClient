@@ -90,18 +90,6 @@
     <ClCompile Include="ChatClient.cpp">
       <Filter>source file</Filter>
     </ClCompile>
-    <ClCompile Include="Define.cpp">
-      <Filter>source file</Filter>
-    </ClCompile>
-    <ClCompile Include="SceneState.cpp">
-      <Filter>source file</Filter>
-    </ClCompile>
-    <ClCompile Include="SceneLogin.cpp">
-      <Filter>source file</Filter>
-    </ClCompile>
-    <ClCompile Include="SceneChatWindow.cpp">
-      <Filter>source file</Filter>
-    </ClCompile>
     <ClCompile Include="Login.cpp">
       <Filter>source file</Filter>
     </ClCompile>
@@ -432,18 +420,6 @@
       <Filter>pch</Filter>
     </ClInclude>
     <ClInclude Include="ChatClient.h">
-      <Filter>header file</Filter>
-    </ClInclude>
-    <ClInclude Include="Define.h">
-      <Filter>header file</Filter>
-    </ClInclude>
-    <ClInclude Include="SceneState.h">
-      <Filter>header file</Filter>
-    </ClInclude>
-    <ClInclude Include="SceneLogin.h">
-      <Filter>header file</Filter>
-    </ClInclude>
-    <ClInclude Include="SceneChatWindow.h">
       <Filter>header file</Filter>
     </ClInclude>
     <ClInclude Include="Login.h">

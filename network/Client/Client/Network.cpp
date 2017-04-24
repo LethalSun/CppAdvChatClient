@@ -101,6 +101,10 @@ namespace chatClient
 		char data[MaxPacketSize] = { 0 };
 		PacketHeder header{ packetId,dataSize };
 
+		if (packetId == 31)
+		{
+			int a = 0;
+		}
 		memcpy(&data[0], (char*)&header, sizeof(header));
 
 		if (dataSize != 0)
@@ -122,6 +126,11 @@ namespace chatClient
 		}
 
 		auto packet = que.front();
+
+		if (packet.PacketId == 32)
+		{
+			int a = 0;
+		}
 		que.pop_front();
 
 		return packet;
@@ -164,7 +173,7 @@ namespace chatClient
 
 			AddPacketToQue(id, size, &pBuffer[readPos]);
 
-
+			readPos += size;
 		}
 
 

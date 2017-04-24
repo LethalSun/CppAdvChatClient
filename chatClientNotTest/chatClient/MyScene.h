@@ -10,7 +10,11 @@ namespace chatClient
 
 		String loginID{};
 		String loginPassWord{};
+
+		short m_LobbyId;
+
 		Network* m_Network;
+
 		//TODO:Áö¿ï°Å
 		Font debugFont;
 		String str;
