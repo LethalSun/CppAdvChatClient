@@ -75,6 +75,29 @@ namespace MDNetwork
 		return returnVal;
 	}
 
+	auto SocketNetwork::GetReceivedPacketQue()
+	{
+		return &m_RawPacketPPLQue;
+	}
+
+	auto SocketNetwork::GetSendFunc()
+	{
+		return [this](const short packetId, const short dataSize, char* dataBody) 
+		{
+			Send(packetId, dataSize, dataBody);
+		};
+	}
+
+	MyReturnVal SocketNetwork::Release()
+	{
+		//소켓을 닫는다
+		closesocket(m_Sockfd);
+		//윈도우 소켓 리소스를 반환한다.
+		WSACleanup();
+
+		return MyReturnVal::ResultOK;
+	}
+
 	void SocketNetwork::ReceiveThreadFunc()
 	{
 
@@ -148,9 +171,11 @@ namespace MDNetwork
 			});
 
 		//memcpy대신 사용.
-		std::copy(pBuffer, pBuffer + pLen, rawPacket.get()); 
-
+		//std::copy(pBuffer, pBuffer + pLen, rawPacket.get()); 
+		memcpy(rawPacket.get(), pBuffer, pLen);
 		m_RawPacketPPLQue.push(rawPacket.get());
 
 		return MyReturnVal::ResultOK;
 	}
+
+

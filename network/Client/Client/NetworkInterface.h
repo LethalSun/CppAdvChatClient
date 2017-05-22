@@ -4,5 +4,8 @@ class NetworkInterface
 public:
 	NetworkInterface();
 	~NetworkInterface();
+
+private:
+	
 };
 

@@ -76,15 +76,12 @@ namespace MDNetwork
 
 		int Send(const short packetId, const short dataSize, char* dataBody);
 
-		MyReturnVal Release()
-		{
-			//소켓을 닫는다
-			closesocket(m_Sockfd);
-			//윈도우 소켓 리소스를 반환한다.
-			WSACleanup();
+		auto GetReceivedPacketQue();
 
-			return MyReturnVal::ResultOK;
-		}
+		auto GetSendFunc();
+
+		MyReturnVal Release();
+
 	private:
 		
 
