@@ -1,6 +1,8 @@
 #pragma once
 namespace chatClient
 {
+	//TODO: 그래픽과 관련된 부분을 제외한 로직부분은 다른 클래스로빼는것이
+	//독립되어서 좋다.
 	class ChatMain :public Manager::Scene
 	{
 		struct RoomInfo
@@ -93,7 +95,7 @@ namespace chatClient
 		int UpdateLobbyMember();
 
 		//채팅
-		int SendChat
+		int SendChat;
 	};
 }
 

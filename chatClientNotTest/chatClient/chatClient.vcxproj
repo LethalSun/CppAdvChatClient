@@ -166,6 +166,7 @@
   <ItemGroup>
     <ClCompile Include="ChatClient.cpp" />
     <ClCompile Include="ChatMain.cpp" />
+    <ClCompile Include="ClientLogic.cpp" />
     <ClCompile Include="Lobby.cpp" />
     <ClCompile Include="Login.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -290,6 +291,7 @@
   <ItemGroup>
     <ClInclude Include="ChatClient.h" />
     <ClInclude Include="ChatMain.h" />
+    <ClInclude Include="ClientLogic.h" />
     <ClInclude Include="Lobby.h" />
     <ClInclude Include="Login.h" />
     <ClInclude Include="MyScene.h" />

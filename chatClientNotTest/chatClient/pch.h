@@ -1,4 +1,5 @@
 #pragma once
+//TODO: pch 는 많이 수정되지 않는 파일, 디파인은 
 #include <Siv3D.hpp>
 #include <HamFramework.hpp>
 #include <array>

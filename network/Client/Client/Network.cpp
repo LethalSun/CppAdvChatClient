@@ -63,6 +63,7 @@ namespace chatClient
 		while (true)
 		{
 			char RecvBuffer[BUFFERSIZE];
+
 			auto length = Recv(RecvBuffer);
 
 			if (length == 0)

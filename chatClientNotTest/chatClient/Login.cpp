@@ -30,7 +30,7 @@ void chatClient::Login::update()
 		m_data->loginPassWord = loginWindow.textField(L"LoginPassword")._get_text();
 	
 		//Ä¿³ØÆ®
-		if (m_data->m_Network->Connect("127.0.0.1", 23452) == false)
+		if (m_data->m_Network->Connect("127.1.0.0", 23452) == false)
 		{
 			font(L"Connect Failed").draw();
 		}	

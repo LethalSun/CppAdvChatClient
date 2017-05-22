@@ -14,6 +14,9 @@ namespace chatClient
 {
 	const int MaxPacketSize = 1024;
 
+	//패킷의 크기를 1바이트 단위크기로 만들수있게 하기 위한 것
+	//이게 없으면 버스의 효율을 위해서 기본크기가 버스가 한번에
+	//읽을수 있는 크기로 변한다.
 #pragma pack(push,1)
 	struct PacketHeder
 	{
@@ -50,9 +53,10 @@ namespace chatClient
 		//윈속 초기화.
 		int Init();
 
-		//
+		//연결.
 		bool Connect(const char*,const int);
 
+		//매번 돌아가는 함수.
 		int Update();
 
 		int Send(const short, const short, char*);
@@ -71,8 +75,11 @@ namespace chatClient
 		std::thread m_th;
 		std::mutex m_Mutex;
 		int Recv(char*);
+		//TODO:받은 패킷을 후처리 하고 보낼패킷을 만드는 부분을 인터페이스로 옮긴다.
 		int RecvProc(const char * ,const int);
 		int AddPacketToQue(const short,const short,const char*);
+
+		//
 	};
 
 }

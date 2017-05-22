@@ -134,12 +134,16 @@
   <ItemGroup>
     <ClInclude Include="ErrorCode.h" />
     <ClInclude Include="Network.h" />
+    <ClInclude Include="NetworkInterface.h" />
     <ClInclude Include="Packet.h" />
     <ClInclude Include="PacketID.h" />
+    <ClInclude Include="SocketNetwork.h" />
     <ClInclude Include="Util.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Network.cpp" />
+    <ClCompile Include="NetworkInterface.cpp" />
+    <ClCompile Include="SocketNetwork.cpp" />
     <ClCompile Include="Util.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
