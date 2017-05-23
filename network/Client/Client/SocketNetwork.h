@@ -1,19 +1,6 @@
 #pragma once
-#pragma once
 #pragma comment(lib, "ws2_32")
-#include <iostream>
-#include <winsock2.h>
-#include <Ws2tcpip.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <thread>
-#include <mutex>
-#include <deque>
-#include <concurrent_queue.h>
-#include <algorithm>
-#include "Util.h"
-#include "Packet.h"
-#include "PacketID.h"
+#include "pch.h"
 namespace MDNetwork
 {
 	enum class MyReturnVal
@@ -42,25 +29,6 @@ namespace MDNetwork
 	//패킷의 크기를 1바이트 단위크기로 만들수있게 하기 위한 것
 	//이게 없으면 버스의 효율을 위해서 기본크기가 버스가 한번에
 	//읽을수 있는 크기로 변한다.
-#pragma pack(push,1)
-
-	struct PacketHeder
-	{
-		short Id;
-		short BodySize;
-	};
-
-	const int PACKET_HEADER_SIZE = sizeof(PacketHeder);
-
-	struct PacketBody
-	{
-		PacketBody() = default;
-
-		short PacketId = 0;
-		short PacketBodySize = 0;
-		char* PacketData = nullptr;
-	};
-#pragma pack(pop)
 
 
 	class SocketNetwork
@@ -89,7 +57,7 @@ namespace MDNetwork
 
 		SOCKET m_Sockfd = INVALID_SOCKET;
 
-		concurrency::concurrent_queue<char*> m_RawPacketPPLQue;
+		concurrency::concurrent_queue<std::shared_ptr<char>> m_RawPacketPPLQue;
 
 		std::thread m_Thead;
 		

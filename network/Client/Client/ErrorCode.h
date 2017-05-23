@@ -1,6 +1,6 @@
 #pragma once
 
-namespace chatClient
+namespace MDNetwork
 {
 	// 201 부터 시작한다.
 	enum class ERROR_CODE : short

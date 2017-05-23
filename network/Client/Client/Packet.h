@@ -3,9 +3,31 @@
 #include "PacketID.h"
 #include "ErrorCode.h"
 
-namespace chatClient
+namespace MDNetwork
 {	
 #pragma pack(push, 1)
+
+	struct PacketHeder
+	{
+		short Id;
+		short BodySize;
+	};
+
+	const int PACKET_HEADER_SIZE = sizeof(PacketHeder);
+
+	struct PacketBody
+	{
+		PacketBody() = default;
+
+		~PacketBody()
+		{
+			delete[] PacketData;
+		}
+		short PacketId = 0;
+		short PacketBodySize = 0;
+		char* PacketData = nullptr;
+	};
+
 	struct PktHeader
 	{
 		short Id;

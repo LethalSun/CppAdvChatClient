@@ -85,8 +85,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -137,12 +136,16 @@
     <ClInclude Include="NetworkInterface.h" />
     <ClInclude Include="Packet.h" />
     <ClInclude Include="PacketID.h" />
+    <ClInclude Include="pch.h" />
     <ClInclude Include="SocketNetwork.h" />
     <ClInclude Include="Util.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Network.cpp" />
     <ClCompile Include="NetworkInterface.cpp" />
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="SocketNetwork.cpp" />
     <ClCompile Include="Util.cpp" />
   </ItemGroup>

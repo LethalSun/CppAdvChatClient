@@ -18,7 +18,7 @@ namespace MDNetwork
 		auto returnVal = WSAStartup(wVersionRequested, &wsaData);
 
 		//윈도우 소켓 초기화는 성공하면 0을 반환한다.
-		if (returnVal !=0)
+		if (returnVal != 0)
 		{
 			return MyReturnVal::ResultSocketInitFail;
 		}
@@ -36,7 +36,7 @@ namespace MDNetwork
 	}
 
 	MyReturnVal SocketNetwork::Connect(const char * pAddr, const int pPort)
-	{	
+	{
 		//SOCKADDR 소켓 주소 구조체, SOCKADDR_IN은 TCP/IP에서 사용되는 소켓 주소 구조체 물론 UDP에서도 사용
 		SOCKADDR_IN serverAddr;
 		serverAddr.sin_family = AF_INET;
@@ -52,7 +52,7 @@ namespace MDNetwork
 
 		m_State = State::Connected;
 
-		m_Thead = std::thread([this]()	{  ReceiveThreadFunc(); });
+		m_Thead = std::thread([this]() {  ReceiveThreadFunc(); });
 
 		return MyReturnVal::ResultOK;
 	}
@@ -60,7 +60,9 @@ namespace MDNetwork
 	int SocketNetwork::Send(const short packetId, const short dataSize, char * dataBody)
 	{
 		auto returnVal = 0;
+
 		char data[MaxPacketSize] = { 0 };
+
 		PacketHeder header{ packetId,dataSize };
 
 		memcpy(&data[0], (char*)&header, sizeof(header));
@@ -82,7 +84,7 @@ namespace MDNetwork
 
 	auto SocketNetwork::GetSendFunc()
 	{
-		return [this](const short packetId, const short dataSize, char* dataBody) 
+		return [this](const short packetId, const short dataSize, char* dataBody)
 		{
 			Send(packetId, dataSize, dataBody);
 		};
@@ -163,19 +165,20 @@ namespace MDNetwork
 
 	MyReturnVal SocketNetwork::AddRawPacketToQue(const char * pBuffer, const int pLen)
 	{
-		std::shared_ptr<char> rawPacket(new char[BUFFERSIZE], 
-			[](char* pBuffer) 
-			{
-				std::cout << "temp buffer deleted\n";
-				delete[] pBuffer;
-			});
+		std::shared_ptr<char> rawPacket(new char[BUFFERSIZE],
+			[](char* pBuffer)
+		{
+			std::cout << "temp buffer deleted\n";
+			delete[] pBuffer;
+		});
 
 		//memcpy대신 사용.
 		//std::copy(pBuffer, pBuffer + pLen, rawPacket.get()); 
 		memcpy(rawPacket.get(), pBuffer, pLen);
-		m_RawPacketPPLQue.push(rawPacket.get());
+		m_RawPacketPPLQue.push(rawPacket);
 
 		return MyReturnVal::ResultOK;
 	}
 
+}
 

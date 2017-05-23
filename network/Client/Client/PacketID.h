@@ -1,6 +1,6 @@
 #pragma once
 
-namespace chatClient
+namespace MDNetwork
 {
 	// 21 이상부터 시작해야 한다!!!
 	enum class PACKET_ID : short
