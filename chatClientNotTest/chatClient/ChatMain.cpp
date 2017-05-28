@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "ChatMain.h"
 #include "../../network/Client/Client/Network.h"
-namespace chatClient
+namespace MDNetwork
 {
 
 
@@ -97,78 +97,80 @@ namespace chatClient
 
 	int ChatMain::GetPacket()
 	{
-		auto packet = m_data->m_Network->GetPacket();
-		//TODO: 언오디드 맵을 사용하는것이 좋음.
-		if (m_IsRoomListEnd == false && packet.PacketId == (short)MDNetwork::PACKET_ID::LOBBY_ENTER_ROOM_LIST_RES)
-		{
-			auto roomList = (MDNetwork::PktLobbyRoomListRes*)packet.PacketData;
-			auto count = roomList->Count - m_RoomIndex + 1;
-			m_RoomIndex = roomList->Count;
-			auto* roomInfo = roomList->RoomInfo;
-			for (int i = 0; i < count; ++i)
-			{
-				roomInfos[i].RoomTitle = roomInfo->RoomTitle;
-				roomInfos[i].RoomIndex = roomInfo->RoomIndex;
-				roomInfos[i].RoomUserCount = roomInfo->RoomUserCount;
-			}
-			m_IsRoomListEnd = roomList->IsEnd;
-			m_IsGeted == true;
-		}
-		else if (packet.PacketId = (short)MDNetwork::PACKET_ID::LOBBY_ENTER_USER_NTF)
-		{
-			auto newMemberPacket = (MDNetwork::PktLobbyNewUserInfoNtf*)packet.PacketData;
-			
-			char *memberId = newMemberPacket->UserID;
-			wchar_t wMemberId[16];
-			Util::AnsiToUnicode(memberId, 16, wMemberId);
-			
-			for (auto iter : m_members)
-			{
-				if (iter.IsEmpty == true)
-				{
-					iter.MenberId = wMemberId;
-					break;
-				}
-			}
-		}
-
-
+		//auto packet = m_data->m_Network->GetPacket();
+		////TODO: 언오디드 맵을 사용하는것이 좋음.
+		//if (m_IsRoomListEnd == false && packet.PacketId == (short)MDNetwork::PACKET_ID::LOBBY_ENTER_ROOM_LIST_RES)
+		//{
+		//	auto roomList = (MDNetwork::PktLobbyRoomListRes*)packet.PacketData;
+		//	auto count = roomList->Count - m_RoomIndex + 1;
+		//	m_RoomIndex = roomList->Count;
+		//	auto* roomInfo = roomList->RoomInfo;
+		//	for (int i = 0; i < count; ++i)
+		//	{
+		//		roomInfos[i].RoomTitle = roomInfo->RoomTitle;
+		//		roomInfos[i].RoomIndex = roomInfo->RoomIndex;
+		//		roomInfos[i].RoomUserCount = roomInfo->RoomUserCount;
+		//	}
+		//	m_IsRoomListEnd = roomList->IsEnd;
+		//	m_IsGeted == true;
+		//}
+		//else if (packet.PacketId = (short)MDNetwork::PACKET_ID::LOBBY_ENTER_USER_NTF)
+		//{
+		//	auto newMemberPacket = (MDNetwork::PktLobbyNewUserInfoNtf*)packet.PacketData;
+		//	
+		//	char *memberId = newMemberPacket->UserID;
+		//	wchar_t wMemberId[16];
+		//	Util::AnsiToUnicode(memberId, 16, wMemberId);
+		//	
+		//	for (auto iter : m_members)
+		//	{
+		//		if (iter.IsEmpty == true)
+		//		{
+		//			iter.MenberId = wMemberId;
+		//			break;
+		//		}
+		//	}
+		//}
+		//
+		//
 		return 0;
 	}
 
 	int ChatMain::SendGetRoomListPacket()
 	{
-		if (m_IsGeted == false)
-		{
-			return -10;
-		}
+		//if (m_IsGeted == false)
+		//{
+		//	return -10;
+		//}
+		//
+		//m_RoomIndex = m_RoomIndex +1;
+		//MDNetwork::PktLobbyRoomListReq getRoomListPacket{ 0, };
+		//getRoomListPacket.StartRoomIndex = m_RoomIndex;
+		//
+		//auto returnVal = m_data->m_Network->Send(
+		//	(short)MDNetwork::PACKET_ID::LOBBY_ENTER_ROOM_LIST_REQ,
+		//	sizeof(getRoomListPacket),
+		//	(char*)&getRoomListPacket);
+		//
+		//m_IsGeted = false;
+		//
+		//return returnVal;
 
-		m_RoomIndex = m_RoomIndex +1;
-		MDNetwork::PktLobbyRoomListReq getRoomListPacket{ 0, };
-		getRoomListPacket.StartRoomIndex = m_RoomIndex;
-
-		auto returnVal = m_data->m_Network->Send(
-			(short)MDNetwork::PACKET_ID::LOBBY_ENTER_ROOM_LIST_REQ,
-			sizeof(getRoomListPacket),
-			(char*)&getRoomListPacket);
-
-		m_IsGeted = false;
-
-		return returnVal;
+		return 0;
 	}
 
 	int ChatMain::SetRoomList()
 	{
-		if (IsRoomSeted)
-		{
-			for (int i = 0; i < 20; ++i)
-			{
-				roomWindow.text(roomIndex[i]).text = roomInfos[i].RoomTitle;
-			}
-
-			IsRoomSeted = true;
-		}
-
+		//if (IsRoomSeted)
+		//{
+		//	for (int i = 0; i < 20; ++i)
+		//	{
+		//		roomWindow.text(roomIndex[i]).text = roomInfos[i].RoomTitle;
+		//	}
+		//
+		//	IsRoomSeted = true;
+		//}
+		//
 		return 0;
 	}
 

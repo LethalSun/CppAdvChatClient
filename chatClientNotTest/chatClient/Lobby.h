@@ -1,5 +1,5 @@
 #pragma once
-namespace chatClient
+namespace MDNetwork
 {
 	class Lobby :public Manager::Scene
 	{

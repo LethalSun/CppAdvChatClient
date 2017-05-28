@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "Network.h"
 
 const char* SERVERRIP = "127.0.0.1";

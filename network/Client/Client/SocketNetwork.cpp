@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "SocketNetwork.h"
 
 
@@ -77,16 +78,16 @@ namespace MDNetwork
 		return returnVal;
 	}
 
-	auto SocketNetwork::GetReceivedPacketQue()
+	RawPacketPPLQue* SocketNetwork::GetReceivedPacketQue()
 	{
 		return &m_RawPacketPPLQue;
 	}
 
-	auto SocketNetwork::GetSendFunc()
+	SendFunc SocketNetwork::GetSendFunc()
 	{
-		return [this](const short packetId, const short dataSize, char* dataBody)
+		return [this] (const short packetId, const short dataSize, char* dataBody)->int
 		{
-			Send(packetId, dataSize, dataBody);
+			return Send(packetId, dataSize, dataBody);
 		};
 	}
 

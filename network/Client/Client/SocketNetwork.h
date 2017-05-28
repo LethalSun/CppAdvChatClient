@@ -26,10 +26,8 @@ namespace MDNetwork
 	const int MaxPacketSize = 1024;
 	const int BUFFERSIZE = 4096;
 
-	//패킷의 크기를 1바이트 단위크기로 만들수있게 하기 위한 것
-	//이게 없으면 버스의 효율을 위해서 기본크기가 버스가 한번에
-	//읽을수 있는 크기로 변한다.
-
+	using RawPacketPPLQue = concurrency::concurrent_queue<std::shared_ptr<char>>;
+	using SendFunc = std::function<int(const short, const short, char*)>;
 
 	class SocketNetwork
 	{
@@ -42,22 +40,21 @@ namespace MDNetwork
 
 		MyReturnVal Connect(const char* pAddr, const int pPort);
 
-		int Send(const short packetId, const short dataSize, char* dataBody);
+		RawPacketPPLQue* GetReceivedPacketQue();
 
-		auto GetReceivedPacketQue();
-
-		auto GetSendFunc();
+		SendFunc GetSendFunc();
 
 		MyReturnVal Release();
 
 	private:
-		
+
+		int Send(const short packetId, const short dataSize, char* dataBody);
 
 		State m_State{ State::Disconnect };
 
 		SOCKET m_Sockfd = INVALID_SOCKET;
 
-		concurrency::concurrent_queue<std::shared_ptr<char>> m_RawPacketPPLQue;
+		RawPacketPPLQue m_RawPacketPPLQue;
 
 		std::thread m_Thead;
 		

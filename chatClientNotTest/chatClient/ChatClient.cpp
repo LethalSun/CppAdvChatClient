@@ -2,12 +2,14 @@
 #include "ChatClient.h"
 
 
+
 ChatClient::ChatClient()
-	:font{30}
-	, font2{20}
+	:font{ 30 }
+	, font2{ 20 }
 {
-	//init main window
+		//init main window
 }
+
 
 
 ChatClient::~ChatClient()

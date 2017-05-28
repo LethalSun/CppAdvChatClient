@@ -1,7 +1,8 @@
 #pragma once
-namespace chatClient
+namespace MDNetwork
 {
 	class Network;
+	class ClientLogic;
 	struct MyScene
 	{
 	public:
@@ -12,10 +13,10 @@ namespace chatClient
 		String loginPassWord{};
 
 		short m_LobbyId;
-
-		Network* m_Network;
+		ClientLogic* m_Logic;
 
 		//TODO:Áö¿ï°Å
+		Network* m_Network;
 		Font debugFont;
 		String str;
 	};

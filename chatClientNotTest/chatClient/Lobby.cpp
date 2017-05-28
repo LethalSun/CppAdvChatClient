@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "Lobby.h"
 #include "../../network/Client/Client/Network.h"
-namespace chatClient
+namespace MDNetwork
 {
 
 
@@ -115,27 +115,30 @@ namespace chatClient
 
 	int Lobby::SendGetLobbyPacket()
 	{
-		auto returnVal = m_data->m_Network->Send(
-			(short)MDNetwork::PACKET_ID::LOBBY_LIST_REQ,
-			0,
-			nullptr);
+		////auto returnVal = m_data->m_Network->Send(
+		//	(short)MDNetwork::PACKET_ID::LOBBY_LIST_REQ,
+		//	0,
+		//	nullptr);
+		//
+		//return returnVal;
 
-		return returnVal;
+		return 0;
 	}
 
 	int Lobby::SendEnterLobbyPacket()
 	{
-		auto lobbyId = m_data->m_LobbyId;
-
-		MDNetwork::PktLobbyEnterReq lobbyInPacket{0,};
-		lobbyInPacket.LobbyId = lobbyId;
-
-		auto returnVal = m_data->m_Network->Send(
-			(short)MDNetwork::PACKET_ID::LOBBY_ENTER_REQ,
-			sizeof(lobbyInPacket),
-			(char*)&lobbyInPacket);
-
-		return returnVal;
+		//auto lobbyId = m_data->m_LobbyId;
+		//
+		//MDNetwork::PktLobbyEnterReq lobbyInPacket{0,};
+		//lobbyInPacket.LobbyId = lobbyId;
+		//
+		//auto returnVal = m_data->m_Network->Send(
+		//	(short)MDNetwork::PACKET_ID::LOBBY_ENTER_REQ,
+		//	sizeof(lobbyInPacket),
+		//	(char*)&lobbyInPacket);
+		//
+		//return returnVal;
+		return 0;
 	}
 
 	int Lobby::EnterLobby()
@@ -149,40 +152,42 @@ namespace chatClient
 	}
 	int Lobby::GetPacket()
 	{
-		auto packet = m_data->m_Network->GetPacket();
+		//auto packet = m_data->m_Network->GetPacket();
+		//
+		//if (packet.PacketId == (short)MDNetwork::PACKET_ID::LOBBY_ENTER_RES)
+		//{
+		//	auto pck = (MDNetwork::PktLobbyEnterRes*)packet.PacketData;
+		//	//MaxUserCount; 이거는 입장가능한지 확인할수 있을것같은데
+		//	//MaxRoomCount;는 어떻게 사용해야 할까? 
+		//	//TODO:최대 유저수로 입장가능여부 확인?
+		//	auto userCount = pck->MaxUserCount;
+		//	auto roomCount = pck->MaxRoomCount;
+		//	m_IsAvailable = true;
+		//}
+		//else if (packet.PacketId == (short)MDNetwork::PACKET_ID::LOBBY_LIST_RES)
+		//{
+		//
+		//	auto LobbyInfo = (MDNetwork::PktLobbyListRes*)packet.PacketData;
+		//	auto LobbyCount = LobbyInfo->LobbyCount;
+		//	auto* LobbyList = LobbyInfo->LobbyList;
+		//
+		//	for (int i = 0; i < LobbyCount; i++)
+		//	{
+		//		if (i > 1)
+		//		{
+		//			break;
+		//		}
+		//		auto index = LobbyList[i].LobbyId;
+		//		m_ChennelList[i].LobbyId = index;
+		//		m_ChennelList[i].LobbyName = Format(L"channel", index,
+		//			L" ", LobbyList[i].LobbyUserCount, L"/50");
+		//		m_ChennelList[i].LobbyUserCount = LobbyList[i].LobbyUserCount;
+		//
+		//	}
+		//
+		//}
+		//return 0;
 
-		if (packet.PacketId == (short)MDNetwork::PACKET_ID::LOBBY_ENTER_RES)
-		{
-			auto pck = (MDNetwork::PktLobbyEnterRes*)packet.PacketData;
-			//MaxUserCount; 이거는 입장가능한지 확인할수 있을것같은데
-			//MaxRoomCount;는 어떻게 사용해야 할까? 
-			//TODO:최대 유저수로 입장가능여부 확인?
-			auto userCount = pck->MaxUserCount;
-			auto roomCount = pck->MaxRoomCount;
-			m_IsAvailable = true;
-		}
-		else if (packet.PacketId == (short)MDNetwork::PACKET_ID::LOBBY_LIST_RES)
-		{
-
-			auto LobbyInfo = (MDNetwork::PktLobbyListRes*)packet.PacketData;
-			auto LobbyCount = LobbyInfo->LobbyCount;
-			auto* LobbyList = LobbyInfo->LobbyList;
-
-			for (int i = 0; i < LobbyCount; i++)
-			{
-				if (i > 1)
-				{
-					break;
-				}
-				auto index = LobbyList[i].LobbyId;
-				m_ChennelList[i].LobbyId = index;
-				m_ChennelList[i].LobbyName = Format(L"channel", index,
-					L" ", LobbyList[i].LobbyUserCount, L"/50");
-				m_ChennelList[i].LobbyUserCount = LobbyList[i].LobbyUserCount;
-
-			}
-
-		}
 		return 0;
 	}
 }

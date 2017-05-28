@@ -1,5 +1,5 @@
 #pragma once
-namespace chatClient
+namespace MDNetwork
 {
 	//TODO: 그래픽과 관련된 부분을 제외한 로직부분은 다른 클래스로빼는것이
 	//독립되어서 좋다.

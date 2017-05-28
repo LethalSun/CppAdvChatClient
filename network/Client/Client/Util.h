@@ -1,7 +1,7 @@
 #pragma once
 #include <stdio.h>
 
-namespace chatClient
+namespace MDNetwork
 {
 	class Util
 	{

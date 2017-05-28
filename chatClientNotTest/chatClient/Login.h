@@ -1,6 +1,6 @@
 #pragma once
 
-namespace chatClient
+namespace MDNetwork
 {
 
 	class Login : public Manager::Scene
@@ -17,7 +17,6 @@ namespace chatClient
 		
 		int SendLoginPack();
 
-		bool m_IsLogedIn = false;
 
 		Font font;
 	};

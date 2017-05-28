@@ -34,24 +34,11 @@ namespace MDNetwork
 		std::thread m_Thead;
 
 		//std::unordered_map<PACKET_ID, NotifyFuntion> m_ObserverMap;
+
+		//ppl컨테이너들
 		ObserverMap  m_ObserverMap;
 		GetFromNetworkQue* m_RawPacketQue;
 
 	};
 
 }
-/*
-namespace chatClient
-{
-
-	
-
-#include "pch.h"
-#include "ClientLogic.h"
-
-	
-
-
-}
-
-*/

@@ -1,17 +1,18 @@
+#include "pch.h"
 #include "NetworkInterface.h"
 
 namespace MDNetwork
 {
 	void NetworkInterface::run()
 	{
-
+		m_Thead = std::thread([this]() {  PacketProcessThreadFunction(); });
 	}
 
 	void NetworkInterface::Subscribe(short pPacketId, NotifyFuntion pFunctor)
 	{
 		if (m_ObserverMap.find(static_cast<PACKET_ID>(pPacketId)) == m_ObserverMap.end())
 		{
-			m_ObserverMap.insert(std::make_pair(pPacketId, pFunctor));
+			m_ObserverMap.insert(std::make_pair(static_cast<PACKET_ID>(pPacketId), pFunctor));
 		}
 		else
 		{
@@ -33,7 +34,7 @@ namespace MDNetwork
 	void NetworkInterface::Broadcast(short pId, short pSize, char * pData)
 	{
 		//진짜 패킷의 아이디, 크기, 실제 패킷으로 다시 바디를 만든다.
-		auto newPacket = std::make_shared<PacketBody>(0);
+		auto newPacket = std::make_shared<PacketBody>();
 
 		newPacket.get()->PacketId = pId;
 		newPacket.get()->PacketBodySize = pSize;

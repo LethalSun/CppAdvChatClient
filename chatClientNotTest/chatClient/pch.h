@@ -8,5 +8,8 @@
 #include <string>
 #include "Define.h"
 #include "MyScene.h"
-
-using Manager = SceneManager<String, chatClient::MyScene>;
+#include "../../network/Client/Client/SocketNetwork.h"
+#include "../../network/Client/Client/NetworkInterface.h"
+#include "../../network/Client/Client/ClientLogic.h"
+#include "../../network/Client/Client/LoginObserver.h"
+using Manager = SceneManager<String, MDNetwork::MyScene>;

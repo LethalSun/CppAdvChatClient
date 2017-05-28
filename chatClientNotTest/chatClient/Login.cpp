@@ -1,79 +1,85 @@
 #include "pch.h"
 #include "Login.h"
-#include "../../network/Client/Client/Network.h"
+#include "../../network/Client/Client/SocketNetwork.h"
 
-void chatClient::Login::init()
+namespace MDNetwork
 {
-	loginWindow.setTitle(L"Login");
-
-
-	loginWindow.addln(L"LoginId", GUITextField::Create(none));
-
-
-	loginWindow.addln(L"LoginPassword", GUITextField::Create(none));
-
-
-	loginWindow.addln(L"LoginButton", GUIButton::Create(L"Login"));
-
-	loginWindow.setCenter(Window::Center());
-
-	m_data->m_Network = new chatClient::Network();
-	m_data->m_Network->Init();
-	m_data->m_LobbyId = -1;
-}
-
-void chatClient::Login::update()
-{
-	if (loginWindow.button(L"LoginButton").pushed)
+	void Login::init()
 	{
-		m_data->loginID = loginWindow.textField(L"LoginId")._get_text();
-		m_data->loginPassWord = loginWindow.textField(L"LoginPassword")._get_text();
+		loginWindow.setTitle(L"Login");
+
+
+		loginWindow.addln(L"LoginId", GUITextField::Create(none));
+
+
+		loginWindow.addln(L"LoginPassword", GUITextField::Create(none));
+
+
+		loginWindow.addln(L"LoginButton", GUIButton::Create(L"Login"));
+
+		loginWindow.setCenter(Window::Center());
+
+		//m_data->m_Network = new chatClient::Network();
+		//m_data->m_Network->Init();
+		//m_data->m_LobbyId = -1;
+	}
+
+	void Login::update()
+	{
+		if (loginWindow.button(L"LoginButton").pushed)
+		{
+			int retVal = 0;
+			
+			m_data->loginID = loginWindow.textField(L"LoginId")._get_text();
+			
+			m_data->loginPassWord = loginWindow.textField(L"LoginPassword")._get_text();
+
+			if (m_data->m_Logic->IsLogin() == false)
+			{
+				retVal = SendLoginPack();
+			}
 	
-		//커넥트
-		if (m_data->m_Network->Connect("127.1.0.0", 23452) == false)
-		{
-			font(L"Connect Failed").draw();
-		}	
-		//로그인 정보 보내기
-		if (SendLoginPack() == -1)
-		{
-			font(L"Send Failed").draw();
+
+			
+			
+			if (retVal == -1)
+			{
+				font(L"Send Failed").draw();
+			}
 		}
-	}
-	//TODO:아이디 패스워드가 맞는지 확인하는 부분
-	auto packet = m_data->m_Network->GetPacket();
-	
-	//맞으면
-	if (packet.PacketId == (short)MDNetwork::PACKET_ID::LOGIN_IN_RES)
-	{
-		m_IsLogedIn = true;
-		//TODO: 로그인 확인용.
-		m_data->str = L"로그인 성공";
-		changeScene(L"Lobby");
-	}
-	//아니면
-}
 
-int chatClient::Login::SendLoginPack()
-{
-	auto returnVal = 0;
-	if (m_IsLogedIn == false)
+		if (m_data->m_Logic->IsLogin() == true)
+		{
+			m_data->str = L"로그인 성공";
+			changeScene(L"Lobby");
+			return;
+		}
+
+	}
+
+	int Login::SendLoginPack()
 	{
+		auto returnVal = 0;
+
+		
 		char id[16]{ 0, };
+
 		const auto w_StrLoginId = m_data->loginID.c_str();
+
 		Util::UnicodeToAnsi(w_StrLoginId, 16, id);
 
+		
 		char pw[16]{ 0, };
+
 		const auto w_StrPassword = m_data->loginPassWord.c_str();
+
 		Util::UnicodeToAnsi(w_StrPassword, 16, pw);
 
-		MDNetwork::PktLogInReq loginPacket{ 0, };
-		strncpy_s(loginPacket.szID, MDNetwork::MAX_USER_ID_SIZE + 1, id, MDNetwork::MAX_USER_ID_SIZE);
-		strncpy_s(loginPacket.szPW, MDNetwork::MAX_USER_PASSWORD_SIZE + 1, pw, MDNetwork::MAX_USER_PASSWORD_SIZE);
+		
+		returnVal = m_data->m_Logic->SendPktLogInReq(id,pw);
 
-		returnVal = m_data->m_Network->Send((short)MDNetwork::PACKET_ID::LOGIN_IN_REQ, sizeof(loginPacket), (char*)&loginPacket);
+		
+		return returnVal;
 	}
 
-	
-	return returnVal;
 }
