@@ -116,7 +116,7 @@ namespace chatClient
 	int Lobby::SendGetLobbyPacket()
 	{
 		auto returnVal = m_data->m_Network->Send(
-			(short)PACKET_ID::LOBBY_LIST_REQ,
+			(short)MDNetwork::PACKET_ID::LOBBY_LIST_REQ,
 			0,
 			nullptr);
 
@@ -127,11 +127,11 @@ namespace chatClient
 	{
 		auto lobbyId = m_data->m_LobbyId;
 
-		PktLobbyEnterReq lobbyInPacket{0,};
+		MDNetwork::PktLobbyEnterReq lobbyInPacket{0,};
 		lobbyInPacket.LobbyId = lobbyId;
 
 		auto returnVal = m_data->m_Network->Send(
-			(short)PACKET_ID::LOBBY_ENTER_REQ,
+			(short)MDNetwork::PACKET_ID::LOBBY_ENTER_REQ,
 			sizeof(lobbyInPacket),
 			(char*)&lobbyInPacket);
 
@@ -151,9 +151,9 @@ namespace chatClient
 	{
 		auto packet = m_data->m_Network->GetPacket();
 
-		if (packet.PacketId == (short)PACKET_ID::LOBBY_ENTER_RES)
+		if (packet.PacketId == (short)MDNetwork::PACKET_ID::LOBBY_ENTER_RES)
 		{
-			auto pck = (PktLobbyEnterRes*)packet.PacketData;
+			auto pck = (MDNetwork::PktLobbyEnterRes*)packet.PacketData;
 			//MaxUserCount; 이거는 입장가능한지 확인할수 있을것같은데
 			//MaxRoomCount;는 어떻게 사용해야 할까? 
 			//TODO:최대 유저수로 입장가능여부 확인?
@@ -161,10 +161,10 @@ namespace chatClient
 			auto roomCount = pck->MaxRoomCount;
 			m_IsAvailable = true;
 		}
-		else if (packet.PacketId == (short)PACKET_ID::LOBBY_LIST_RES)
+		else if (packet.PacketId == (short)MDNetwork::PACKET_ID::LOBBY_LIST_RES)
 		{
 
-			auto LobbyInfo = (PktLobbyListRes*)packet.PacketData;
+			auto LobbyInfo = (MDNetwork::PktLobbyListRes*)packet.PacketData;
 			auto LobbyCount = LobbyInfo->LobbyCount;
 			auto* LobbyList = LobbyInfo->LobbyList;
 

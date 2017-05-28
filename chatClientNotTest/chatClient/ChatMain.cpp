@@ -99,9 +99,9 @@ namespace chatClient
 	{
 		auto packet = m_data->m_Network->GetPacket();
 		//TODO: 언오디드 맵을 사용하는것이 좋음.
-		if (m_IsRoomListEnd == false && packet.PacketId == (short)PACKET_ID::LOBBY_ENTER_ROOM_LIST_RES)
+		if (m_IsRoomListEnd == false && packet.PacketId == (short)MDNetwork::PACKET_ID::LOBBY_ENTER_ROOM_LIST_RES)
 		{
-			auto roomList = (PktLobbyRoomListRes*)packet.PacketData;
+			auto roomList = (MDNetwork::PktLobbyRoomListRes*)packet.PacketData;
 			auto count = roomList->Count - m_RoomIndex + 1;
 			m_RoomIndex = roomList->Count;
 			auto* roomInfo = roomList->RoomInfo;
@@ -114,9 +114,9 @@ namespace chatClient
 			m_IsRoomListEnd = roomList->IsEnd;
 			m_IsGeted == true;
 		}
-		else if (packet.PacketId = (short)PACKET_ID::LOBBY_ENTER_USER_NTF)
+		else if (packet.PacketId = (short)MDNetwork::PACKET_ID::LOBBY_ENTER_USER_NTF)
 		{
-			auto newMemberPacket = (PktLobbyNewUserInfoNtf*)packet.PacketData;
+			auto newMemberPacket = (MDNetwork::PktLobbyNewUserInfoNtf*)packet.PacketData;
 			
 			char *memberId = newMemberPacket->UserID;
 			wchar_t wMemberId[16];
@@ -144,11 +144,11 @@ namespace chatClient
 		}
 
 		m_RoomIndex = m_RoomIndex +1;
-		PktLobbyRoomListReq getRoomListPacket{ 0, };
+		MDNetwork::PktLobbyRoomListReq getRoomListPacket{ 0, };
 		getRoomListPacket.StartRoomIndex = m_RoomIndex;
 
 		auto returnVal = m_data->m_Network->Send(
-			(short)PACKET_ID::LOBBY_ENTER_ROOM_LIST_REQ,
+			(short)MDNetwork::PACKET_ID::LOBBY_ENTER_ROOM_LIST_REQ,
 			sizeof(getRoomListPacket),
 			(char*)&getRoomListPacket);
 

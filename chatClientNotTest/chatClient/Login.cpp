@@ -44,7 +44,7 @@ void chatClient::Login::update()
 	auto packet = m_data->m_Network->GetPacket();
 	
 	//맞으면
-	if (packet.PacketId == (short)PACKET_ID::LOGIN_IN_RES)
+	if (packet.PacketId == (short)MDNetwork::PACKET_ID::LOGIN_IN_RES)
 	{
 		m_IsLogedIn = true;
 		//TODO: 로그인 확인용.
@@ -67,11 +67,11 @@ int chatClient::Login::SendLoginPack()
 		const auto w_StrPassword = m_data->loginPassWord.c_str();
 		Util::UnicodeToAnsi(w_StrPassword, 16, pw);
 
-		PktLogInReq loginPacket{ 0, };
-		strncpy_s(loginPacket.szID, MAX_USER_ID_SIZE + 1, id, MAX_USER_ID_SIZE);
-		strncpy_s(loginPacket.szPW, MAX_USER_PASSWORD_SIZE + 1, pw, MAX_USER_PASSWORD_SIZE);
+		MDNetwork::PktLogInReq loginPacket{ 0, };
+		strncpy_s(loginPacket.szID, MDNetwork::MAX_USER_ID_SIZE + 1, id, MDNetwork::MAX_USER_ID_SIZE);
+		strncpy_s(loginPacket.szPW, MDNetwork::MAX_USER_PASSWORD_SIZE + 1, pw, MDNetwork::MAX_USER_PASSWORD_SIZE);
 
-		returnVal = m_data->m_Network->Send((short)PACKET_ID::LOGIN_IN_REQ, sizeof(loginPacket), (char*)&loginPacket);
+		returnVal = m_data->m_Network->Send((short)MDNetwork::PACKET_ID::LOGIN_IN_REQ, sizeof(loginPacket), (char*)&loginPacket);
 	}
 
 	

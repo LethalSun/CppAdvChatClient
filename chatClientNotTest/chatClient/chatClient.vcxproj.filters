@@ -102,9 +102,6 @@
     <ClCompile Include="ChatMain.cpp">
       <Filter>source file</Filter>
     </ClCompile>
-    <ClCompile Include="ClientLogic.cpp">
-      <Filter>source file</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource.rc">
@@ -435,9 +432,6 @@
       <Filter>header file</Filter>
     </ClInclude>
     <ClInclude Include="ChatMain.h">
-      <Filter>header file</Filter>
-    </ClInclude>
-    <ClInclude Include="ClientLogic.h">
       <Filter>header file</Filter>
     </ClInclude>
   </ItemGroup>

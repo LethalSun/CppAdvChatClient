@@ -43,6 +43,7 @@ namespace MDNetwork
 	//- 로그인 요청
 	const int MAX_USER_ID_SIZE = 16;
 	const int MAX_USER_PASSWORD_SIZE = 16;
+	
 	struct PktLogInReq
 	{
 		char szID[MAX_USER_ID_SIZE+1] = { 0, };

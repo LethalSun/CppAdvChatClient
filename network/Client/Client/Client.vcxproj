@@ -90,6 +90,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -131,16 +132,21 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ClientLogic.h" />
     <ClInclude Include="ErrorCode.h" />
+    <ClInclude Include="LoginObserver.h" />
     <ClInclude Include="Network.h" />
     <ClInclude Include="NetworkInterface.h" />
     <ClInclude Include="Packet.h" />
     <ClInclude Include="PacketID.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="SocketNetwork.h" />
+    <ClInclude Include="Usings.h" />
     <ClInclude Include="Util.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ClientLogic.cpp" />
+    <ClCompile Include="LoginObserver.cpp" />
     <ClCompile Include="Network.cpp" />
     <ClCompile Include="NetworkInterface.cpp" />
     <ClCompile Include="pch.cpp">

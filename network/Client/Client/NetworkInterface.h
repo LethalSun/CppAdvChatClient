@@ -4,10 +4,11 @@
 
 namespace MDNetwork
 {
+
 	class Observer;
 
-	using NotifyFuntion = std::function<void(std::shared_ptr<PacketBody>)>;
-	using GetFromNetworkQue = concurrency::concurrent_queue<std::shared_ptr<char>>;
+	using NotifyFuntion = std::function<void(PacketBodyPtr)>;
+	using GetFromNetworkQue = concurrency::concurrent_queue<RawPacketPtr>;
 	using ObserverMap = concurrency::concurrent_unordered_map<PACKET_ID, NotifyFuntion>;
 
 	class NetworkInterface
@@ -39,4 +40,18 @@ namespace MDNetwork
 	};
 
 }
+/*
+namespace chatClient
+{
 
+	
+
+#include "pch.h"
+#include "ClientLogic.h"
+
+	
+
+
+}
+
+*/
