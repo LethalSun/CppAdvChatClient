@@ -7,6 +7,7 @@
 #include <thread>
 #include <mutex>
 #include <unordered_map>
+#include <array>
 #include <concurrent_queue.h>
 #include <concurrent_unordered_map.h>
 #include <algorithm>
@@ -15,3 +16,6 @@
 #include "Packet.h"
 #include "PacketID.h"
 #include "Usings.h"
+
+const int MaxPacketSize = 1024;
+const int BUFFERSIZE = 4096;

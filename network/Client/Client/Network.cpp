@@ -3,7 +3,7 @@
 
 const char* SERVERRIP = "127.0.0.1";
 const int SERVERPORT = 23452;
-const int BUFFERSIZE = 4096;
+//const int BUFFERSIZE = 4096;
 namespace chatClient
 {
 	//윈속초기화와 소켓 할당.

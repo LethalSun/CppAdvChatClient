@@ -23,8 +23,7 @@ namespace MDNetwork
 		Connected = 2,
 	};
 
-	const int MaxPacketSize = 1024;
-	const int BUFFERSIZE = 4096;
+
 
 	using RawPacketPPLQue = concurrency::concurrent_queue<std::shared_ptr<char>>;
 	using SendFunc = std::function<int(const short, const short, char*)>;

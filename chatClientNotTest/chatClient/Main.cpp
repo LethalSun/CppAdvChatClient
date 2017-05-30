@@ -8,6 +8,7 @@
 const char IpAddr[] = "127.0.0.1";
 const int Port = 23452;
 
+
 void Main()
 {
 	//Window::Resize(1280, 720);
@@ -37,11 +38,14 @@ void Main()
 	//네트워크 객체로 부터 패킷을 보내는 함수를 받아온다.
 	logic.GetNetworkSendFunc(network.GetSendFunc());
 
+
+
 	//--++옵저버들 생성.
 
-	//옵저버:LOGIN_IN_RES
-	MDNetwork::LoginObserver loginObserver;
 
+	//--옵저버:LOGIN_IN_RES
+	MDNetwork::LoginObserver loginObserver;
+	
 	//등록:옵저버->서브젝트
 	networkInterface.Subscribe(static_cast<short>(
 		MDNetwork::PACKET_ID::LOGIN_IN_RES),
@@ -50,12 +54,83 @@ void Main()
 	//등록:로직->옵저버
 	logic.SetLOGIN_IN_RES_Que(loginObserver.GetLOGIN_IN_RES_Que());
 
+
+	//--옵저버:LOBBY_LIST_RES
+	MDNetwork::LobbyObserver lobbyObserver;
+
+	//등록:옵저버->서브젝트
+	networkInterface.Subscribe(static_cast<short>(
+		MDNetwork::PACKET_ID::LOBBY_LIST_RES),
+		lobbyObserver.GetLOBBY_LIST_RES_Func());
+
+	//등록:로직->옵저버
+	logic.SetLOBBY_LIST_RES_Que(lobbyObserver.GetLOBBY_LIST_RES_Que());
+
+
+	//--옵저버:LOBBY_ENTER_RES
+
+	//등록:옵저버->서브젝트
+	networkInterface.Subscribe(static_cast<short>(
+		MDNetwork::PACKET_ID::LOBBY_ENTER_RES),
+		lobbyObserver.GetLOBBY_ENTER_RES_Func());
+
+	//등록:로직->옵저버
+	logic.SetLOBBY_ENTER_RES_Que(lobbyObserver.GetLOBBY_ENTER_RES_Que());
+
+
+	//--옵저버:LOBBY_ENTER_USER_NTF
+
+	//등록:옵저버->서브젝트
+	networkInterface.Subscribe(static_cast<short>(
+		MDNetwork::PACKET_ID::LOBBY_ENTER_USER_NTF),
+		lobbyObserver.GetLOBBY_ENTER_USER_NTF_Func());
+
+	//등록:로직->옵저버
+	logic.SetLOBBY_ENTER_USER_NTF_Que(lobbyObserver.GetLOBBY_ENTER_USER_NTF_Que());
+	
+	
+	//--옵저버:LOBBY_ENTER_ROOM_LIST_RES
+
+	//등록:옵저버->서브젝트
+	networkInterface.Subscribe(static_cast<short>(
+		MDNetwork::PACKET_ID::LOBBY_ENTER_ROOM_LIST_RES),
+		lobbyObserver.GetLOBBY_ENTER_ROOM_LIST_RES_Func());
+
+	//등록:로직->옵저버
+
+	//--옵저버:LOBBY_ENTER_USER_LIST_RES
+	//등록:옵저버->서브젝트
+	networkInterface.Subscribe(static_cast<short>(
+		MDNetwork::PACKET_ID::LOBBY_ENTER_USER_LIST_RES),
+		lobbyObserver.GetLOBBY_ENTER_USER_LIST_RES_Func());
+	//등록:로직->옵저버
+
+	
+	//--옵저버:LOBBY_LEAVE_RES
+	//등록:옵저버->서브젝트
+	networkInterface.Subscribe(static_cast<short>(
+		MDNetwork::PACKET_ID::LOBBY_LEAVE_RES),
+		lobbyObserver.GetLOBBY_LEAVE_RES_Func());
+	//등록:로직->옵저버
+
+	//--옵저버:LOBBY_LEAVE_USER_NTF
+	//등록:옵저버->서브젝트
+	networkInterface.Subscribe(static_cast<short>(
+		MDNetwork::PACKET_ID::LOBBY_LEAVE_USER_NTF),
+		lobbyObserver.GetLOBBY_LEAVE_USER_NTF_Func());
+	//등록:로직->옵저버
+
+
+	//옵저버:
+	//등록:옵저버->서브젝트
+	//등록:로직->옵저버
+
 	//Siv3D 신 관리 매니저.
 	Manager manager;
-
+	manager.add<MDNetwork::ChatMain>(L"ChatMain");
 	manager.add<MDNetwork::Login>(L"Login");
 	manager.add<MDNetwork::Lobby>(L"Lobby");
-	manager.add<MDNetwork::ChatMain>(L"ChatMain");
+	
 	manager.get()->m_Logic = &logic;
 	while (System::Update())
 	{

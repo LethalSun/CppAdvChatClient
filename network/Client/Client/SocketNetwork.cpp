@@ -172,7 +172,9 @@ namespace MDNetwork
 			std::cout << "temp buffer deleted\n";
 			delete[] pBuffer;
 		});
-
+		auto a = (PacketHeder*)rawPacket.get();
+		auto b = sizeof(*a);
+		auto c = sizeof(a);
 		//memcpy대신 사용.
 		//std::copy(pBuffer, pBuffer + pLen, rawPacket.get()); 
 		memcpy(rawPacket.get(), pBuffer, pLen);

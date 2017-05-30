@@ -56,7 +56,7 @@ namespace MDNetwork
 
 
 	//- 채널 리스트 요청
-	const int MAX_LOBBY_LIST_COUNT = 20;
+	const int MAX_LOBBY_LIST_COUNT = 2;
 	struct LobbyListInfo
 	{
 		short LobbyId;

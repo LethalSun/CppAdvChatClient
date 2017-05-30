@@ -5,14 +5,14 @@ namespace MDNetwork
 	// 21 이상부터 시작해야 한다!!!
 	enum class PACKET_ID : short
 	{		
-		LOGIN_IN_REQ = 21,
-		LOGIN_IN_RES = 22,
+		LOGIN_IN_REQ = 21,//
+		LOGIN_IN_RES = 22,//
 
-		LOBBY_LIST_REQ = 26,
-		LOBBY_LIST_RES = 27,
+		LOBBY_LIST_REQ = 26,//
+		LOBBY_LIST_RES = 27,//
 
-		LOBBY_ENTER_REQ = 31,
-		LOBBY_ENTER_RES = 32,
+		LOBBY_ENTER_REQ = 31,//
+		LOBBY_ENTER_RES = 32,//
 		LOBBY_ENTER_USER_NTF = 33,
 
 		LOBBY_ENTER_ROOM_LIST_REQ = 41,

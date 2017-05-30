@@ -17,6 +17,9 @@ namespace MDNetwork
 		
 		int SendLoginPack();
 
+		int LoginProcess();
+
+		int CheckLoginState();
 
 		Font font;
 	};

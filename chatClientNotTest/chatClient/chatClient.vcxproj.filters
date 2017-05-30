@@ -102,6 +102,12 @@
     <ClCompile Include="ChatMain.cpp">
       <Filter>source file</Filter>
     </ClCompile>
+    <ClCompile Include="Initializer.cpp">
+      <Filter>source file</Filter>
+    </ClCompile>
+    <ClCompile Include="Chennel.cpp">
+      <Filter>source file</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource.rc">
@@ -432,6 +438,12 @@
       <Filter>header file</Filter>
     </ClInclude>
     <ClInclude Include="ChatMain.h">
+      <Filter>header file</Filter>
+    </ClInclude>
+    <ClInclude Include="Initializer.h">
+      <Filter>header file</Filter>
+    </ClInclude>
+    <ClInclude Include="Chennel.h">
       <Filter>header file</Filter>
     </ClInclude>
   </ItemGroup>

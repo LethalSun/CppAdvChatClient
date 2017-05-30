@@ -38,6 +38,7 @@ namespace MDNetwork
 
 		newPacket.get()->PacketId = pId;
 		newPacket.get()->PacketBodySize = pSize;
+		newPacket.get()->PacketData = new char[newPacket.get()->PacketBodySize];
 		memcpy(newPacket.get()->PacketData, pData, pSize);
 
 		//아이디에 대응 하는 콜백함수를 찾는다.
@@ -59,13 +60,19 @@ namespace MDNetwork
 	void NetworkInterface::PacketProcessThreadFunction()
 	{
 		//큐에 있는 처리되지 않은 패킷에서 헤더를 때어낸다.
-		std::shared_ptr<char> rawPacket;
+		
 
-		while (m_RawPacketQue->try_pop(rawPacket))
+		while (true)
 		{
-			auto packet =  (PacketHeder*)rawPacket.get();
+			std::shared_ptr<char> rawPacket;
 
-			Broadcast(packet->Id,packet->BodySize,&rawPacket.get()[PACKET_HEADER_SIZE]);
+			if (m_RawPacketQue->try_pop(rawPacket))
+			{
+				auto packet = (PacketHeder*)rawPacket.get();
+
+				Broadcast(packet->Id, packet->BodySize, &rawPacket.get()[PACKET_HEADER_SIZE]);
+			}
+			
 		}
 
 		

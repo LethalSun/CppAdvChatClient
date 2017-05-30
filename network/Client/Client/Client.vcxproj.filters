@@ -51,6 +51,12 @@
     <ClInclude Include="ClientLogic.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="LobbyObserver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RoomObserver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Network.cpp">
@@ -72,6 +78,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ClientLogic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LobbyObserver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RoomObserver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,11 +1,12 @@
 #include "pch.h"
-#include "ChatMain.h"
+#include "Chennel.h"
 #include "../../network/Client/Client/Network.h"
+
 namespace MDNetwork
 {
 
 
-	void ChatMain::init()
+	void Chennel::init()
 	{
 		Window::Resize(1280, 720);
 
@@ -31,7 +32,7 @@ namespace MDNetwork
 		//roomInfos.reserve(20);
 	}
 
-	void ChatMain::update()
+	void Chennel::update()
 	{
 
 		if (m_IsRoomListEnd == false)
@@ -60,7 +61,7 @@ namespace MDNetwork
 		{
 			GetMemberList();
 			SetMemberList();
-			
+
 		}
 		else
 		{
@@ -71,7 +72,7 @@ namespace MDNetwork
 
 	}
 
-	int ChatMain::updateTextField()
+	int Chennel::updateTextField()
 	{
 		inputWindow.textArea(L"InputField").enabled = true;
 		showWindow.textArea(L"ShowField").enabled = true;
@@ -89,7 +90,7 @@ namespace MDNetwork
 		return 0;
 	}
 
-	int ChatMain::GetPacket()
+	int Chennel::GetPacket()
 	{
 		//auto packet = m_data->m_Network->GetPacket();
 		////TODO: 언오디드 맵을 사용하는것이 좋음.
@@ -130,7 +131,7 @@ namespace MDNetwork
 		return 0;
 	}
 
-	int ChatMain::SendGetRoomListPacket()
+	int Chennel::SendGetRoomListPacket()
 	{
 		//if (m_IsGeted == false)
 		//{
@@ -153,7 +154,7 @@ namespace MDNetwork
 		return 0;
 	}
 
-	int ChatMain::SetRoomList()
+	int Chennel::SetRoomList()
 	{
 		//if (IsRoomSeted)
 		//{
@@ -168,26 +169,26 @@ namespace MDNetwork
 		return 0;
 	}
 
-	int ChatMain::UpdateLobbyMember()
+	int Chennel::UpdateLobbyMember()
 	{
 
-		memberWindow.text(L"Member1").text=m_members[0].MenberId;
-		memberWindow.text(L"Member2").text=m_members[1].MenberId;
-		memberWindow.text(L"Member3").text=m_members[2].MenberId;
-		memberWindow.text(L"Member4").text=m_members[3].MenberId;
-		memberWindow.text(L"Member5").text=m_members[4].MenberId;
-		
+		memberWindow.text(L"Member1").text = m_members[0].MenberId;
+		memberWindow.text(L"Member2").text = m_members[1].MenberId;
+		memberWindow.text(L"Member3").text = m_members[2].MenberId;
+		memberWindow.text(L"Member4").text = m_members[3].MenberId;
+		memberWindow.text(L"Member5").text = m_members[4].MenberId;
+
 		return 0;
 	}
 
-	int ChatMain::GetMemberList()
+	int Chennel::GetMemberList()
 	{
 		//서버로 부터 멤버 리스트를 받아온다.
 		//변화가 있는지 확인을 해야됨
 		return 0;
 	}
 
-	int ChatMain::SetMemberList()
+	int Chennel::SetMemberList()
 	{
 		SetGuiText(memberWindow, L"Member1", L"person1");
 		SetGuiText(memberWindow, L"Member2", L"person2");
@@ -197,14 +198,14 @@ namespace MDNetwork
 
 		return 0;
 	}
-	int ChatMain::CheckRoomListButton()
+	int Chennel::CheckRoomListButton()
 	{
 		for (int i = 0; i < 5; ++i)
 		{
 			auto buttonIndex = roomIndex[i] + String(L"Button");
 			if (roomWindow.button(buttonIndex).pushed)
 			{
-				m_RoomId = i+1;
+				m_RoomId = i + 1;
 			}
 		}
 
@@ -217,11 +218,11 @@ namespace MDNetwork
 		return 0;
 	}
 
-	void ChatMain::draw() const
+	void Chennel::draw() const
 	{
 	}
 
-	int ChatMain::InitRoomWindow()
+	int Chennel::InitRoomWindow()
 	{
 		roomWindow.setTitle(L"Room List");
 		for (int i = 0; i < 5; i++)
@@ -239,7 +240,7 @@ namespace MDNetwork
 		return 1;
 	}
 
-	int ChatMain::InitInputWindow()
+	int Chennel::InitInputWindow()
 	{
 		auto pos = roomWindow.getPos();
 
@@ -258,19 +259,19 @@ namespace MDNetwork
 		return 1;
 	}
 
-	int ChatMain::InitShowWindow()
+	int Chennel::InitShowWindow()
 	{
 		auto pos = roomWindow.getPos();
 
 		auto dPos = roomWindow.getRect();
-		showWindow.setTitle(Format(L"Channel ID:",m_data->m_LobbyInfo.LobbyId));
+		showWindow.setTitle(Format(L"Channel ID:", m_data->m_LobbyInfo.LobbyId));
 		showWindow.addln(L"ShowField", GUITextArea::Create(25, 30));
 		showWindow.setPos(Point(pos.x + dPos.w, 0));
 
 		return 1;
 	}
 
-	int ChatMain::InitMemberWindow()
+	int Chennel::InitMemberWindow()
 	{
 		auto pos = showWindow.getPos();
 
@@ -283,14 +284,14 @@ namespace MDNetwork
 			AddText(memberWindow, i, memberIndex[i]);
 		}
 
-		memberWindow.setPos(Point(pos.x+dPos.w, 0));
+		memberWindow.setPos(Point(pos.x + dPos.w, 0));
 
 		memberWindow.style.width = 250;
 
 		return 1;
 	}
 
-	int ChatMain::AddTextAndButton(GUI gui, int listIndex, String name)
+	int Chennel::AddTextAndButton(GUI gui, int listIndex, String name)
 	{
 		auto index = roomIndex[listIndex];
 		gui.add(index, GUIText::Create(name));
@@ -302,7 +303,7 @@ namespace MDNetwork
 		return 1;
 	}
 
-	int ChatMain::AddText(GUI gui, int listIndex, String name)
+	int Chennel::AddText(GUI gui, int listIndex, String name)
 	{
 		auto index = memberIndex[listIndex];
 		gui.addln(index, GUIText::Create(name));
@@ -311,26 +312,26 @@ namespace MDNetwork
 		return 1;
 	}
 
-	int ChatMain::MakeRoomIndex(int pNum)
+	int Chennel::MakeRoomIndex(int pNum)
 	{
 		for (int i = 0; i < pNum; ++i)
 		{
-			roomIndex[i] = Format(L"Room", i+1, L":");
+			roomIndex[i] = Format(L"Room", i + 1, L":");
 		}
-		
+
 		return 1;
 	}
 
-	int ChatMain::MakeMemberIndex(int pNum)
+	int Chennel::MakeMemberIndex(int pNum)
 	{
 		for (int i = 0; i < pNum; ++i)
 		{
-			memberIndex[i] = Format(L"Member", i+1, L":");
+			memberIndex[i] = Format(L"Member", i + 1, L":");
 		}
 		return 1;
 	}
 
-	int ChatMain::SetGuiText(GUI gui, String textName, String newText)
+	int Chennel::SetGuiText(GUI gui, String textName, String newText)
 	{
 		gui.text(textName).text = newText;
 		return 0;

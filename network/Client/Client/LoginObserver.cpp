@@ -29,8 +29,6 @@ namespace MDNetwork
 	{
 		auto pktID = pPacket->PacketId;
 		auto pktSize = pPacket->PacketBodySize;
-		//패킷베이스의 에러코드를 확인 할수 있을수도. 
-		auto Pkt = (MDNetwork::PktLobbyListRes*)pPacket->PacketData;
 
 		m_loginPacketQue.push(pktID);
 

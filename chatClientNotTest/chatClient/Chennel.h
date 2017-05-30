@@ -1,9 +1,10 @@
 #pragma once
+
 namespace MDNetwork
 {
-	//TODO: 그래픽과 관련된 부분을 제외한 로직부분은 다른 클래스로빼는것이
-	//독립되어서 좋다.
-	class ChatMain :public Manager::Scene
+
+
+	class Chennel :public Manager::Scene
 	{
 		struct RoomInfo
 		{
@@ -42,14 +43,14 @@ namespace MDNetwork
 
 		//방의 리스트
 		std::array<String, 5> roomList{};
-		
+
 		//로비의 멤버
 		std::array<String, 20> memberList{};
-		
+
 		//각각의 siv3d용 인덱스
 		std::array<String, 5> roomIndex{};
 		std::array<String, 20> memberIndex{};
-		
+
 		//각각의 siv3d용 인덱스를 만드는 함수
 		int MakeRoomIndex(int pNum);
 		int MakeMemberIndex(int pNum);
@@ -58,7 +59,7 @@ namespace MDNetwork
 		int m_RoomId{ -1 };
 
 		//showwindow에 표현될 텍스트.
-		String m_PresentText{L"입장하셨습니다.\n"};
+		String m_PresentText{ L"입장하셨습니다.\n" };
 
 		//update 에서 눌린 방의 인덱스를 확인한다.
 		int CheckRoomListButton();
@@ -80,7 +81,7 @@ namespace MDNetwork
 		short m_timer = 0;
 		Font font;
 		bool m_IsGeted = true;
-		std::array<RoomInfo, 20> roomInfos{0,};
+		std::array<RoomInfo, 20> roomInfos{ 0, };
 
 		//받아온 방리스트를 띄운다.
 		int SetRoomList();
@@ -98,6 +99,5 @@ namespace MDNetwork
 		//채팅
 		int SendChat;
 	};
+
 }
-
-

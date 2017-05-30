@@ -134,24 +134,28 @@
   <ItemGroup>
     <ClInclude Include="ClientLogic.h" />
     <ClInclude Include="ErrorCode.h" />
+    <ClInclude Include="LobbyObserver.h" />
     <ClInclude Include="LoginObserver.h" />
     <ClInclude Include="Network.h" />
     <ClInclude Include="NetworkInterface.h" />
     <ClInclude Include="Packet.h" />
     <ClInclude Include="PacketID.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="RoomObserver.h" />
     <ClInclude Include="SocketNetwork.h" />
     <ClInclude Include="Usings.h" />
     <ClInclude Include="Util.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientLogic.cpp" />
+    <ClCompile Include="LobbyObserver.cpp" />
     <ClCompile Include="LoginObserver.cpp" />
     <ClCompile Include="Network.cpp" />
     <ClCompile Include="NetworkInterface.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="RoomObserver.cpp" />
     <ClCompile Include="SocketNetwork.cpp" />
     <ClCompile Include="Util.cpp" />
   </ItemGroup>

@@ -1,0 +1,222 @@
+#include "pch.h"
+#include "LobbyObserver.h"
+
+namespace MDNetwork
+{
+	LobbyObserver::LobbyObserver()
+	{
+	}
+
+	LobbyObserver::~LobbyObserver()
+	{
+	}
+	
+	LOBBY_LIST_RES_Func LobbyObserver::GetLOBBY_LIST_RES_Func()
+	{
+		return [this](PacketBodyPtr pPacket)
+		{
+			NotifyLOBBY_LIST_RES( pPacket);
+		};
+	}
+	
+	LobbyPacketQue * LobbyObserver::GetLOBBY_LIST_RES_Que()
+	{
+		return &m_LobbyPacketQue;
+	}
+
+	LOBBY_ENTER_RES_Func LobbyObserver::GetLOBBY_ENTER_RES_Func()
+	{
+		return [this](PacketBodyPtr pPacket)
+		{
+			NotifyLOBBY_ENTER_RES(pPacket);
+		};
+	}
+
+	LobbyEnterPacketQue * LobbyObserver::GetLOBBY_ENTER_RES_Que()
+	{
+		return &m_LobbyEnterPacketQue;
+	}
+
+	LOBBY_ENTER_USER_NTF_Func LobbyObserver::GetLOBBY_ENTER_USER_NTF_Func()
+	{
+		return [this](PacketBodyPtr pPacket)
+		{
+			NotifyLOBBY_ENTER_USER_NTF(pPacket);
+		};
+	}
+
+	LobbyNewUserInfoNtfQue * LobbyObserver::GetLOBBY_ENTER_USER_NTF_Que()
+	{
+		return &m_LobbyNewUserInfoNtfQue;
+	}
+
+	LOBBY_ENTER_ROOM_LIST_RES_Func LobbyObserver::GetLOBBY_ENTER_ROOM_LIST_RES_Func()
+	{
+		return [this](PacketBodyPtr pPacket)
+		{
+			NotifyLOBBY_ENTER_ROOM_LIST_RES(pPacket);
+		};
+	}
+
+	PktLobbyRoomListResQue* LobbyObserver::GetPktLobbyRoomListResQue()
+	{
+		return &m_LobbyRoomListResQue;
+	}
+
+	LOBBY_ENTER_USER_LIST_RES_Func LobbyObserver::GetLOBBY_ENTER_USER_LIST_RES_Func()
+	{
+		return [this](PacketBodyPtr pPacket)
+		{
+			NotifyLOBBY_ENTER_USER_LIST_RES(pPacket);
+		};
+	}
+
+	PktLobbyUserListResQue * LobbyObserver::GetPktLobbyUserListResQue()
+	{
+		return &m_LobbyUserListResQue;
+	}
+
+	LOBBY_LEAVE_RES_Func LobbyObserver::GetLOBBY_LEAVE_RES_Func()
+	{
+		return [this](PacketBodyPtr pPacket)
+		{
+			NotifyLOBBY_LEAVE_RES(pPacket);
+		};
+	}
+
+	PktLobbyLeaveResQue * LobbyObserver::GetPktLobbyLeaveResQue()
+	{
+		return &m_LobbyLeaveResQue;
+	}
+	
+	LOBBY_LEAVE_USER_NTF_Func LobbyObserver::GetLOBBY_LEAVE_USER_NTF_Func()
+	{
+		return [this](PacketBodyPtr pPacket)
+		{
+			NotifyLOBBY_LEAVE_USER_NTF(pPacket);
+		};
+	}
+
+	PktLobbyLeaveUserInfoNtfQue * LobbyObserver::GetPktLobbyLeaveUserInfoNtfQue()
+	{
+		return &m_LobbyLeaveUserInfoNtfQue;
+	}
+
+	void LobbyObserver::NotifyLOBBY_LIST_RES(PacketBodyPtr pPacket)
+	{
+		auto size = pPacket->PacketBodySize;
+		auto id = pPacket->PacketId;
+		auto data = (MDNetwork::PktLobbyListRes*)pPacket->PacketData;
+		
+		PktLobbyListRes pkt;
+		
+		pkt.LobbyCount = data->LobbyCount;
+		pkt.ErrorCode = data->ErrorCode;
+	
+		for (int i = 0; i < pkt.LobbyCount; ++i)
+		{
+			pkt.LobbyList[i].LobbyId = data->LobbyList[i].LobbyId;
+			
+			pkt.LobbyList[i].LobbyUserCount = data->LobbyList[i].LobbyUserCount;
+			
+		}
+		
+		m_LobbyPacketQue.push(pkt);
+		
+	}
+
+	void LobbyObserver::NotifyLOBBY_ENTER_RES(PacketBodyPtr pPacket)
+	{
+		auto size = pPacket->PacketBodySize;
+		auto id = pPacket->PacketId;
+		auto data = (MDNetwork::PktLobbyEnterRes*)pPacket->PacketData;
+
+		PktLobbyEnterRes pkt;
+
+		pkt.MaxRoomCount = data->MaxRoomCount;
+		pkt.MaxUserCount = data->MaxUserCount;
+		pkt.ErrorCode = data->ErrorCode;
+
+		m_LobbyEnterPacketQue.push(pkt);
+	}
+
+	void LobbyObserver::NotifyLOBBY_ENTER_USER_NTF(PacketBodyPtr pPacket)
+	{
+		auto size = pPacket->PacketBodySize;
+		auto id = pPacket->PacketId;
+		auto data = (MDNetwork::PktLobbyNewUserInfoNtf*)pPacket->PacketData;
+
+		PktLobbyNewUserInfoNtf pkt;
+		
+		memcpy(pkt.UserID, data->UserID,MAX_USER_ID_SIZE);
+	
+		m_LobbyNewUserInfoNtfQue.push(pkt);
+	}
+
+	void LobbyObserver::NotifyLOBBY_ENTER_ROOM_LIST_RES(PacketBodyPtr pPacket)
+	{
+		auto size = pPacket->PacketBodySize;
+		auto id = pPacket->PacketId;
+		auto data = (MDNetwork::PktLobbyRoomListRes*)pPacket->PacketData;
+
+		PktLobbyRoomListRes pkt;
+
+		pkt.Count = data->Count;
+		pkt.IsEnd = data->IsEnd;
+		pkt.ErrorCode = data->ErrorCode;
+		
+		auto infoSize = sizeof(RoomSmallInfo);
+
+		memcpy((char*)pkt.RoomInfo, (char*)data->RoomInfo, size);
+
+		m_LobbyRoomListResQue.push(pkt);
+	}
+
+	void LobbyObserver::NotifyLOBBY_ENTER_USER_LIST_RES(PacketBodyPtr pPacket)
+	{
+		auto size = pPacket->PacketBodySize;
+		auto id = pPacket->PacketId;
+		auto data = (MDNetwork::PktLobbyUserListRes*)pPacket->PacketData;
+
+		PktLobbyUserListRes pkt;
+
+		pkt.Count = data->Count;
+		pkt.ErrorCode = data->ErrorCode;
+		pkt.IsEnd = data->IsEnd;
+
+		auto infoSize = sizeof(UserSmallInfo);
+
+		memcpy((char*)pkt.UserInfo, (char*)data->UserInfo, size);
+
+		m_LobbyUserListResQue.push(pkt);
+	}
+
+	void LobbyObserver::NotifyLOBBY_LEAVE_RES(PacketBodyPtr pPacket)
+	{
+		auto size = pPacket->PacketBodySize;
+		auto id = pPacket->PacketId;
+		auto data = (MDNetwork::PktLobbyLeaveRes*)pPacket->PacketData;
+		
+		PktLobbyLeaveRes pkt;
+
+		pkt.ErrorCode = data->ErrorCode;
+
+		m_LobbyLeaveResQue.push(id);
+	}
+
+	void LobbyObserver::NotifyLOBBY_LEAVE_USER_NTF(PacketBodyPtr pPacket)
+	{
+		auto size = pPacket->PacketBodySize;
+		auto id = pPacket->PacketId;
+		auto data = (MDNetwork::PktLobbyLeaveUserInfoNtf*)pPacket->PacketData;
+
+		PktLobbyLeaveUserInfoNtf pkt;
+
+		memcpy(pkt.UserID, data->UserID, MAX_USER_ID_SIZE);
+
+		m_LobbyLeaveUserInfoNtfQue.push(pkt);
+	}
+
+
+}
+

@@ -12,4 +12,5 @@
 #include "../../network/Client/Client/NetworkInterface.h"
 #include "../../network/Client/Client/ClientLogic.h"
 #include "../../network/Client/Client/LoginObserver.h"
+#include "../../network/Client/Client/LobbyObserver.h"
 using Manager = SceneManager<String, MDNetwork::MyScene>;
