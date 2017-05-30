@@ -8,6 +8,7 @@
 #include <mutex>
 #include <unordered_map>
 #include <array>
+#include <deque>
 #include <concurrent_queue.h>
 #include <concurrent_unordered_map.h>
 #include <algorithm>

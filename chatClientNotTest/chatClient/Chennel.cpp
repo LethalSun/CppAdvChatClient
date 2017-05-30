@@ -29,32 +29,26 @@ namespace MDNetwork
 
 		InitMemberWindow();
 
+		//방 리스트 받아오기
+		GetRoomList();
+		//멤버 리스트 받아오기
+
 		//roomInfos.reserve(20);
 	}
 
 	void Chennel::update()
 	{
+		//입장 공지 확인
+		CheckNewMenber();
 
-		if (m_IsRoomListEnd == false)
-		{
-			SendGetRoomListPacket();
+		SetNewUser();
+		
+		//퇴장 공지 확인
 
-		}
-		else
-		{
-			SetRoomList();
-			++m_timer;
-			if (m_timer < 60)
-			{
-				m_IsRoomListEnd = false;
-				IsRoomSeted = false;
-				m_timer = 0;
-			}
-		}
+		//방정보 갱신 확인
 
-		GetPacket();
-
-		UpdateLobbyMember();
+		//채팅 확인
+		
 
 		CheckRoomListButton();
 		if (m_RoomId > 0 && m_RoomId <= 5)
@@ -66,7 +60,8 @@ namespace MDNetwork
 		else
 		{
 		}
-
+		//처음 받아오 방,멤버의 리스트 갱신된 리스트를 표시하는 함수.
+		UpdateLobbyMember();
 		updateTextField();
 
 
@@ -90,77 +85,13 @@ namespace MDNetwork
 		return 0;
 	}
 
-	int Chennel::GetPacket()
-	{
-		//auto packet = m_data->m_Network->GetPacket();
-		////TODO: 언오디드 맵을 사용하는것이 좋음.
-		//if (m_IsRoomListEnd == false && packet.PacketId == (short)MDNetwork::PACKET_ID::LOBBY_ENTER_ROOM_LIST_RES)
-		//{
-		//	auto roomList = (MDNetwork::PktLobbyRoomListRes*)packet.PacketData;
-		//	auto count = roomList->Count - m_RoomIndex + 1;
-		//	m_RoomIndex = roomList->Count;
-		//	auto* roomInfo = roomList->RoomInfo;
-		//	for (int i = 0; i < count; ++i)
-		//	{
-		//		roomInfos[i].RoomTitle = roomInfo->RoomTitle;
-		//		roomInfos[i].RoomIndex = roomInfo->RoomIndex;
-		//		roomInfos[i].RoomUserCount = roomInfo->RoomUserCount;
-		//	}
-		//	m_IsRoomListEnd = roomList->IsEnd;
-		//	m_IsGeted == true;
-		//}
-		//else if (packet.PacketId = (short)MDNetwork::PACKET_ID::LOBBY_ENTER_USER_NTF)
-		//{
-		//	auto newMemberPacket = (MDNetwork::PktLobbyNewUserInfoNtf*)packet.PacketData;
-		//	
-		//	char *memberId = newMemberPacket->UserID;
-		//	wchar_t wMemberId[16];
-		//	Util::AnsiToUnicode(memberId, 16, wMemberId);
-		//	
-		//	for (auto iter : m_members)
-		//	{
-		//		if (iter.IsEmpty == true)
-		//		{
-		//			iter.MenberId = wMemberId;
-		//			break;
-		//		}
-		//	}
-		//}
-		//
-		//
-		return 0;
-	}
-
-	int Chennel::SendGetRoomListPacket()
-	{
-		//if (m_IsGeted == false)
-		//{
-		//	return -10;
-		//}
-		//
-		//m_RoomIndex = m_RoomIndex +1;
-		//MDNetwork::PktLobbyRoomListReq getRoomListPacket{ 0, };
-		//getRoomListPacket.StartRoomIndex = m_RoomIndex;
-		//
-		//auto returnVal = m_data->m_Network->Send(
-		//	(short)MDNetwork::PACKET_ID::LOBBY_ENTER_ROOM_LIST_REQ,
-		//	sizeof(getRoomListPacket),
-		//	(char*)&getRoomListPacket);
-		//
-		//m_IsGeted = false;
-		//
-		//return returnVal;
-
-		return 0;
-	}
-
 	int Chennel::SetRoomList()
 	{
 		//if (IsRoomSeted)
 		//{
 		//	for (int i = 0; i < 20; ++i)
 		//	{
-		//		roomWindow.text(roomIndex[i]).text = roomInfos[i].RoomTitle;
+		//		roomWindow.text(m_RoomIndex[i]).text = roomInfos[i].RoomTitle;
 		//	}
 		//
 		//	IsRoomSeted = true;
@@ -202,7 +133,7 @@ namespace MDNetwork
 	{
 		for (int i = 0; i < 5; ++i)
 		{
-			auto buttonIndex = roomIndex[i] + String(L"Button");
+			auto buttonIndex = m_RoomIndex[i] + String(L"Button");
 			if (roomWindow.button(buttonIndex).pushed)
 			{
 				m_RoomId = i + 1;
@@ -218,26 +149,62 @@ namespace MDNetwork
 		return 0;
 	}
 
-	void Chennel::draw() const
+	bool Chennel::CheckNewMenber()
 	{
-	}
+		m_data->m_Logic->IsThereNewUser();
+		char m_NewUser[MAX_USER_ID_SIZE + 1];
+		m_data->m_Logic->GetNewUser(m_NewUser);
 
-	int Chennel::InitRoomWindow()
-	{
-		roomWindow.setTitle(L"Room List");
-		for (int i = 0; i < 5; i++)
+		if (*m_NewUser != '\0')
 		{
-			AddTextAndButton(roomWindow, i, roomIndex[i]);
+			wchar_t buffer[MAX_USER_ID_SIZE + 1];
+			Util::AnsiToUnicode(m_NewUser, MAX_USER_ID_SIZE + 1, buffer);
+			m_NewUserId.push_back(buffer);
+
+			return true;
 		}
 
-		roomWindow.add(L"Lobby", GUIText::Create(L"Exit to Login"));
-		roomWindow.text(L"Lobby").style.width = 100;
-		roomWindow.addln(L"LobbyButton", GUIButton::Create(L"Enter"));
+		return false;
+	}
 
-		roomWindow.setPos(Point(0, 0));
-		roomWindow.style.width = 250;
+	void Chennel::SetNewUser()
+	{
 
-		return 1;
+		for (auto user : m_MemberList)
+		{
+			if (m_NewUserId.empty())
+			{
+				break;
+			}
+
+			if (user.IsEmpty)
+			{
+				user.MenberId = m_NewUserId.front();
+				m_NewUserId.pop_front();
+			}
+		}
+	}
+
+	int Chennel::GetRoomList()
+	{
+		m_data->m_Logic->SendPktRoomList(0);
+
+		auto lastRoomindex = m_data->m_Logic->TryGetRoomList();
+
+		for (int i = 0; i <= lastRoomindex; ++i)
+		{
+			auto roomInfo = m_data->m_Logic->CopyRoomList();
+			short index, count;
+			String title;
+
+			std::tie(index, count, title) = roomInfo;
+
+			m_RoomList[i].RoomIndex = index;
+			m_RoomList[i].RoomUserCount = count;
+			m_RoomList[i].RoomTitle = title;
+		}
+		
+		return 0;
 	}
 
 	int Chennel::InitInputWindow()
@@ -271,6 +238,24 @@ namespace MDNetwork
 		return 1;
 	}
 
+	int Chennel::InitRoomWindow()
+	{
+		roomWindow.setTitle(L"Room List");
+		for (int i = 0; i < 5; i++)
+		{
+			AddTextAndButton(roomWindow, i, m_RoomIndex[i]);
+		}
+
+		roomWindow.add(L"Lobby", GUIText::Create(L"Exit to Login"));
+		roomWindow.text(L"Lobby").style.width = 100;
+		roomWindow.addln(L"LobbyButton", GUIButton::Create(L"Enter"));
+
+		roomWindow.setPos(Point(0, 0));
+		roomWindow.style.width = 250;
+
+		return 1;
+	}
+
 	int Chennel::InitMemberWindow()
 	{
 		auto pos = showWindow.getPos();
@@ -281,7 +266,7 @@ namespace MDNetwork
 
 		for (int i = 0; i < 20; i++)
 		{
-			AddText(memberWindow, i, memberIndex[i]);
+			AddText(memberWindow, i, m_MemberIndex[i]);
 		}
 
 		memberWindow.setPos(Point(pos.x + dPos.w, 0));
@@ -293,7 +278,7 @@ namespace MDNetwork
 
 	int Chennel::AddTextAndButton(GUI gui, int listIndex, String name)
 	{
-		auto index = roomIndex[listIndex];
+		auto index = m_RoomIndex[listIndex];
 		gui.add(index, GUIText::Create(name));
 		gui.text(index).style.width = 100;
 
@@ -305,7 +290,7 @@ namespace MDNetwork
 
 	int Chennel::AddText(GUI gui, int listIndex, String name)
 	{
-		auto index = memberIndex[listIndex];
+		auto index = m_MemberIndex[listIndex];
 		gui.addln(index, GUIText::Create(name));
 		gui.text(index).style.width = 100;
 
@@ -316,7 +301,7 @@ namespace MDNetwork
 	{
 		for (int i = 0; i < pNum; ++i)
 		{
-			roomIndex[i] = Format(L"Room", i + 1, L":");
+			m_RoomIndex[i] = Format(L"Room", i + 1, L":");
 		}
 
 		return 1;
@@ -326,7 +311,7 @@ namespace MDNetwork
 	{
 		for (int i = 0; i < pNum; ++i)
 		{
-			memberIndex[i] = Format(L"Member", i + 1, L":");
+			m_MemberIndex[i] = Format(L"Member", i + 1, L":");
 		}
 		return 1;
 	}
@@ -335,6 +320,11 @@ namespace MDNetwork
 	{
 		gui.text(textName).text = newText;
 		return 0;
+	}
+
+
+	void Chennel::draw() const
+	{
 	}
 
 }

@@ -2,6 +2,7 @@
 #include "ChatClient.h"
 #include "Login.h"
 #include "Lobby.h"
+#include "Chennel.h"
 #include "ChatMain.h"
 
 
@@ -98,6 +99,7 @@ void Main()
 
 	//등록:로직->옵저버
 
+
 	//--옵저버:LOBBY_ENTER_USER_LIST_RES
 	//등록:옵저버->서브젝트
 	networkInterface.Subscribe(static_cast<short>(
@@ -113,6 +115,7 @@ void Main()
 		lobbyObserver.GetLOBBY_LEAVE_RES_Func());
 	//등록:로직->옵저버
 
+	
 	//--옵저버:LOBBY_LEAVE_USER_NTF
 	//등록:옵저버->서브젝트
 	networkInterface.Subscribe(static_cast<short>(
@@ -127,10 +130,11 @@ void Main()
 
 	//Siv3D 신 관리 매니저.
 	Manager manager;
-	manager.add<MDNetwork::ChatMain>(L"ChatMain");
+	manager.add<MDNetwork::Chennel>(L"Chennel");
 	manager.add<MDNetwork::Login>(L"Login");
 	manager.add<MDNetwork::Lobby>(L"Lobby");
 	
+	manager.add<MDNetwork::ChatMain>(L"ChatMain");
 	manager.get()->m_Logic = &logic;
 	while (System::Update())
 	{

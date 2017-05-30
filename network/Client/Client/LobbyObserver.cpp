@@ -164,10 +164,16 @@ namespace MDNetwork
 		pkt.Count = data->Count;
 		pkt.IsEnd = data->IsEnd;
 		pkt.ErrorCode = data->ErrorCode;
-		
-		auto infoSize = sizeof(RoomSmallInfo);
 
-		memcpy((char*)pkt.RoomInfo, (char*)data->RoomInfo, size);
+		for (int i = 0; i < 5; ++i)
+		{
+			pkt.RoomInfo[i].RoomIndex = data->RoomInfo[i].RoomIndex;
+			pkt.RoomInfo[i].RoomUserCount = data->RoomInfo[i].RoomUserCount;
+			memcpy(
+				(char*)pkt.RoomInfo[i].RoomTitle,
+				(char*)data->RoomInfo[i].RoomTitle,
+				MAX_ROOM_TITLE_SIZE + 1);
+		}
 
 		m_LobbyRoomListResQue.push(pkt);
 	}
@@ -184,9 +190,14 @@ namespace MDNetwork
 		pkt.ErrorCode = data->ErrorCode;
 		pkt.IsEnd = data->IsEnd;
 
-		auto infoSize = sizeof(UserSmallInfo);
-
-		memcpy((char*)pkt.UserInfo, (char*)data->UserInfo, size);
+		for (int i = 0; i < 20; ++i)
+		{
+			pkt.UserInfo[i].LobbyUserIndex = data->UserInfo[i].LobbyUserIndex;
+			memcpy(
+				(char*)pkt.UserInfo[i].UserID,
+				(char*)data->UserInfo[i].UserID,
+				MAX_USER_ID_SIZE + 1);
+		}
 
 		m_LobbyUserListResQue.push(pkt);
 	}

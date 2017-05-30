@@ -113,8 +113,41 @@ namespace MDNetwork
 		}
 	}
 
-	void ClientLogic::OnLOBBY_LEAVE_USER_NTF()
+	
+
+	void ClientLogic::OnLOBBY_LEAVE_RES()
 	{
+		if (IsLeaveLobbyAllowed == false)
+		{
+			short pkt;
+			if (m_LobbyLeaveQue->try_pop(pkt))
+			{
+				IsLeaveLobbyAllowed = true;
+
+				return;
+			}
+		
+			return;
+		}
+
+		return;
+	}
+
+	bool ClientLogic::OnLOBBY_LEAVE_USER_NTF()
+	{
+		PktLobbyLeaveUserInfoNtf buffer;
+		if (m_LobbyLeaveNtfQue->try_pop(buffer))
+		{
+			auto data = buffer.UserID;
+
+			memcpy(m_LeavedUser, data, MAX_USER_ID_SIZE + 1);
+
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	bool ClientLogic::IsLogin()
@@ -201,8 +234,9 @@ namespace MDNetwork
 		return userAndRoom;
 	}
 
-	int ClientLogic::SetLOBBY_ENTER_USER_NTF_Que(LobbyNewUserInfoNtfQue *)
+	int ClientLogic::SetLOBBY_ENTER_USER_NTF_Que(LobbyNewUserInfoNtfQue * pQue)
 	{
+		m_LobbyNewUserQue = pQue;
 		return 0;
 	}
 
@@ -220,22 +254,281 @@ namespace MDNetwork
 
 	void ClientLogic::GetNewUser(char * pNewUserId)
 	{
-		if (m_NewUser[0] == '/0')
+		if (m_NewUser[0] == '\0')
 		{
 			return;
 		}
 		else
 		{
-			memcpy(pNewUserId, m_NewUser, MAX_USER_ID_SIZE);
-			m_NewUser[0] = '/0';
+			memcpy(pNewUserId, m_NewUser, MAX_USER_ID_SIZE + 1);
+			m_NewUser[0] = '\0';
 			return;
 		}
 	}
 
-
-	int ClientLogic::SetLOBBY_LEAVE_USER_NTF(PktLobbyLeaveUserInfoNtfQue)
+	int ClientLogic::SendPktRoomList(short pStartIndex)
 	{
+		auto returnVal = -1;
+		if (pStartIndex = 0)
+		{
+			MDNetwork::PktLobbyRoomListReq pkt;
+
+			pkt.StartRoomIndex = pStartIndex;
+
+			returnVal = m_SendFunc(
+				static_cast<short>(PACKET_ID::LOBBY_ENTER_ROOM_LIST_REQ),
+				sizeof(pkt),
+				(char*)&pkt
+			);
+		}
+		else if(pStartIndex>0)
+		{
+			auto index = pStartIndex + 1;
+			MDNetwork::PktLobbyRoomListReq pkt;
+
+			pkt.StartRoomIndex = index;
+
+			returnVal = m_SendFunc(
+				static_cast<short>(PACKET_ID::LOBBY_ENTER_ROOM_LIST_REQ),
+				sizeof(pkt),
+				(char*)&pkt
+			);
+		}
+		else
+		{
+
+		}
+
+		return returnVal;
+	}
+
+	int ClientLogic::SetLOBBY_ENTER_ROOM_LIST_RES_Que(PktLobbyRoomListResQue * pQue)
+	{
+		m_LobbyRoomListQue = pQue;
 		return 0;
+	}
+
+	int ClientLogic::TryGetRoomList()
+	{
+		while (true)
+		{
+			if (LastRoomIndex != LastRoomIndexMemory)
+			{
+				LastRoomIndexMemory = LastRoomIndex;
+				SendPktRoomList(LastRoomIndex);
+			}
+
+			if (OnLOBBY_ENTER_ROOM_LIST_RES())
+			{
+				break;
+			}
+
+		}
+
+		return LastRoomIndex;
+	}
+
+	RoomRetInfo ClientLogic::CopyRoomList()
+	{
+
+		auto room = RoomList.front();
+		RoomList.pop_front();
+
+		auto ret = std::make_tuple(room.RoomIndex, room.RoomUserCount, room.RoomTitle);
+
+		return ret;
+
+	}
+
+	int ClientLogic::SendPktLobbyUserList(short pStartIndex)
+	{
+		auto returnVal = -1;
+		if (pStartIndex = 0)
+		{
+			MDNetwork::PktLobbyUserListReq pkt;
+
+			pkt.StartUserIndex = pStartIndex;
+
+			returnVal = m_SendFunc(
+				static_cast<short>(PACKET_ID::LOBBY_ENTER_USER_LIST_REQ),
+				sizeof(pkt),
+				(char*)&pkt
+			);
+		}
+		else if (pStartIndex>0)
+		{
+			auto index = pStartIndex + 1;
+			MDNetwork::PktLobbyUserListReq pkt;
+
+			pkt.StartUserIndex = index;
+
+			returnVal = m_SendFunc(
+				static_cast<short>(PACKET_ID::LOBBY_ENTER_USER_LIST_REQ),
+				sizeof(pkt),
+				(char*)&pkt
+			);
+		}
+		else
+		{
+
+		}
+
+		return returnVal;
+	}
+
+	int ClientLogic::SetLOBBY_ENTER_USER_LIST_RES_Que(PktLobbyUserListResQue * pQue)
+	{
+		m_LobbyUserListQue = pQue;
+		return 0;
+	}
+
+	int ClientLogic::TryGetUserList()
+	{
+		while (true)
+		{
+			if (LastUserIndex != LastUserListMemory)
+			{
+				LastUserListMemory = LastUserIndex;
+				SendPktLobbyUserList(LastUserIndex);
+			}
+
+			if (OnLOBBY_ENTER_USER_LIST_RES())
+			{
+				break;
+			}
+
+		}
+
+		return LastRoomIndex;
+	}
+
+	UserRetInfo ClientLogic::CopyUserList()
+	{
+		auto user = UserList.front();
+		UserList.pop_front();
+
+		auto ret = std::make_tuple(user.LobbyUserIndex, user.UserID);
+
+		return ret;
+	}
+
+	int ClientLogic::SendPktLobbyLeave()
+	{
+		auto returnVal = -1;
+
+		if (m_IsLobby == true)
+		{
+			returnVal = m_SendFunc(
+				(short)MDNetwork::PACKET_ID::LOBBY_LEAVE_REQ,
+				0,
+				nullptr);
+		}
+
+		return returnVal;
+	}
+
+	int ClientLogic::SetLOBBY_LEAVE_RES_Que(PktLobbyLeaveResQue * pQue)
+	{
+		m_LobbyLeaveQue = pQue;
+		return 0;
+	}
+
+	bool ClientLogic::CanILeave()
+	{
+		OnLOBBY_LEAVE_RES();
+		
+		return IsLeaveLobbyAllowed;
+	}
+
+	bool ClientLogic::OnLOBBY_ENTER_USER_LIST_RES()
+	{
+		PktLobbyUserListRes pkt;
+		if (m_LobbyUserListQue->try_pop(pkt))
+		{
+			auto error = pkt.ErrorCode;
+
+			if (error != 0)
+			{
+				return true;
+			}
+
+			LastUserIndex = pkt.Count;
+
+			
+
+			for (int i = 0; i < 32; ++i)
+			{
+				UserSmallInfo userInfo;
+
+				userInfo.LobbyUserIndex = pkt.UserInfo[i].LobbyUserIndex;
+
+				memcpy(userInfo.UserID, pkt.UserInfo[i].UserID, MAX_USER_ID_SIZE + 1);
+
+				UserList.push_back(userInfo);
+			}
+
+		}
+		return pkt.IsEnd;
+	}
+
+	bool ClientLogic::OnLOBBY_ENTER_ROOM_LIST_RES()
+	{
+		PktLobbyRoomListRes pkt;
+		if (m_LobbyRoomListQue->try_pop(pkt))
+		{
+			auto error = pkt.ErrorCode;
+			if (error != 0)
+			{
+				return true;
+			}
+			LastRoomIndex = pkt.Count;
+
+			for (int i = 0; i < 12; ++i)
+			{
+				RoomSmallInfo roomInfo;
+			
+				roomInfo.RoomIndex = pkt.RoomInfo[i].RoomIndex;
+				
+				roomInfo.RoomUserCount = pkt.RoomInfo[i].RoomUserCount;
+			
+				char buffer[MAX_ROOM_TITLE_SIZE + 1];
+				
+				Util::UnicodeToAnsi(pkt.RoomInfo[i].RoomTitle, MAX_ROOM_TITLE_SIZE + 1, buffer);
+				
+				Util::AnsiToUnicode(buffer, MAX_ROOM_TITLE_SIZE + 1, roomInfo.RoomTitle);
+
+				RoomList.push_back(roomInfo);
+			}
+
+		}
+		return pkt.IsEnd;
+	}
+
+
+
+	int ClientLogic::SetLOBBY_LEAVE_USER_NTF(PktLobbyLeaveUserInfoNtfQue* pQue)
+	{
+		m_LobbyLeaveNtfQue = pQue;
+		return 0;
+	}
+
+	bool ClientLogic::IsThereLevedUser()
+	{
+		return false;
+	}
+
+	void ClientLogic::GetLevedUser(char * pNewUserId)
+	{
+		if (m_LeavedUser[0] == '\0')
+		{
+			return;
+		}
+		else
+		{
+			memcpy(pNewUserId, m_LeavedUser, MAX_USER_ID_SIZE + 1);
+			m_LeavedUser[0] = '\0';
+			return;
+		}
 	}
 
 }

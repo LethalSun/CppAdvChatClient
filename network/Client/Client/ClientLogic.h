@@ -28,6 +28,14 @@ namespace MDNetwork
 
 	using ChennelListArr = std::array<std::tuple<short, short>, MAX_LOBBY_LIST_COUNT>;
 
+	using RoomListQue = std::deque<RoomSmallInfo>;
+		
+	using UserListQue = std::deque<UserSmallInfo>;
+
+	using RoomRetInfo = std::tuple<short, short, wchar_t*>;
+	
+	using UserRetInfo = std::tuple<short, char*>;
+
 	class ClientLogic
 	{
 	public:
@@ -38,6 +46,8 @@ namespace MDNetwork
 
 		//send 함수를 받아오는 함수
 		void GetNetworkSendFunc(SendFunc pSendfunc);
+
+		//--++로그인
 		
 		//로그인 리퀘스트 패킷을 보내는 함수
 		int SendPktLogInReq(char* pID, char* pPW);
@@ -57,7 +67,7 @@ namespace MDNetwork
 		//옵저버로 부터 큐 받아오는 함수
 		int SetLOBBY_LIST_RES_Que(LobbyListInfoQue* pQue);
 
-		//룸의 리스트를 확인하는 함수
+		//채널의 리스트를 확인하는 함수
 		ChennelInfo GetLobbyList(int& pIndexCount);
 
 
@@ -72,6 +82,8 @@ namespace MDNetwork
 		bool IsLobbyEnterAllowed();
 
 		MaxUserAndRoom GetUserAndRoomCount();
+		
+		
 		//--++입장 공지
 
 		//옵저버로 부터 큐 받아오는 함수
@@ -79,13 +91,21 @@ namespace MDNetwork
 
 		bool IsThereNewUser();
 		void GetNewUser(char * pNewUserId);
+		
+		
 		//--++방리스트 요청
 
 		//채널의 방 리스트 요청패킷을 보내는 함수
 		int SendPktRoomList(short pStartIndex);
 
 		//옵저버로 부터 큐 받아오는 함수
-		int SetLOBBY_ENTER_ROOM_LIST_RES_Que(PktLobbyRoomListResQue*);
+		int SetLOBBY_ENTER_ROOM_LIST_RES_Que(PktLobbyRoomListResQue* pQue);
+
+		//방의 리스트를 받아오는 함수
+		int TryGetRoomList();
+		
+		//방의 리스트를 복사하는 함수
+		RoomRetInfo CopyRoomList();
 
 
 		//--++채널 유저 리스트 요청
@@ -94,7 +114,12 @@ namespace MDNetwork
 		int SendPktLobbyUserList(short pStartIndex);
 
 		//옵저버로 부터 큐 받아오는 함수
-		int SetLOBBY_ENTER_USER_LIST_RES_Que(PktLobbyUserListResQue*);
+		int SetLOBBY_ENTER_USER_LIST_RES_Que(PktLobbyUserListResQue* pQue);
+
+		//유저의 리스트를 받아오는 함수
+		int TryGetUserList();
+
+		UserRetInfo CopyUserList();
 
 
 		//--++채널 떠나기
@@ -103,13 +128,20 @@ namespace MDNetwork
 		int SendPktLobbyLeave();
 
 		//옵저버로 부터 큐 받아오는 함수
-		int SetLOBBY_LEAVE_RES_Que(PktLobbyLeaveResQue*);
+		int SetLOBBY_LEAVE_RES_Que(PktLobbyLeaveResQue* pQue);
+
+		bool CanILeave();
 
 
 		//--++퇴장 공지
 
 		//옵저버로 부터 큐 받아오는 함수
-		int SetLOBBY_LEAVE_USER_NTF(PktLobbyLeaveUserInfoNtfQue);
+		int SetLOBBY_LEAVE_USER_NTF(PktLobbyLeaveUserInfoNtfQue* pQue);
+
+		bool IsThereLevedUser();
+
+		void GetLevedUser(char * pNewUserId);
+		//--++로비 채팅
 
 		//--++방 입장 요청
 
@@ -120,8 +152,6 @@ namespace MDNetwork
 		//--++방 퇴장 공지
 
 		//--++로비 방 정보 공지
-
-		//--++로비 채팅
 
 		//--++방 채팅
 
@@ -179,19 +209,48 @@ namespace MDNetwork
 		//함수
 		bool OnLOBBY_ENTER_USER_NTF();
 
+
 		//--++방리스트 요청
+		//관련변수
 		PktLobbyRoomListResQue* m_LobbyRoomListQue;
 
+		RoomListQue RoomList;
+
+		short LastRoomIndex = 0;
+
+		short LastRoomIndexMemory = 0;
+		//함수
+		bool OnLOBBY_ENTER_ROOM_LIST_RES();
+
 		//--++채널 유저 리스트 요청
+		//관련변수
 		PktLobbyUserListResQue* m_LobbyUserListQue;
 
+		UserListQue UserList;
+
+		short LastUserIndex = 0;
+
+		short LastUserListMemory = 0;
+		//함수
+		bool OnLOBBY_ENTER_USER_LIST_RES();
+
 		//--++채널 떠나기
+		//관련 변수
 		PktLobbyLeaveResQue* m_LobbyLeaveQue;
+
+		bool IsLeaveLobbyAllowed = false;
+
+		//함수
+		void OnLOBBY_LEAVE_RES();
+
 
 		//--++퇴장 공지
 		PktLobbyLeaveUserInfoNtfQue* m_LobbyLeaveNtfQue;
 
-		void OnLOBBY_LEAVE_USER_NTF();
+		char m_LeavedUser[MAX_USER_ID_SIZE + 1];
+
+		bool OnLOBBY_LEAVE_USER_NTF();
+
 		//--++로비 채팅
 
 		//--++방 입장 요청

@@ -5,6 +5,7 @@
 #include <array>
 #include <unordered_map>
 #include <vector>
+#include <deque>
 #include <string>
 #include "Define.h"
 #include "MyScene.h"
