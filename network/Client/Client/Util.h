@@ -3,6 +3,8 @@
 
 namespace MDNetwork
 {
+	const int MaxPacketSize = 4096;
+
 	class Util
 	{
 	public:
@@ -17,6 +19,16 @@ namespace MDNetwork
 		{
 			_snwprintf_s(pszDest, destSize, _TRUNCATE, L"%s", pszText);
 		}
+
+		static std::wstring CharToWstring(const char* pszText)
+		{
+			int textLength = strlen(pszText) + 1;
+			wchar_t wTemp[MaxPacketSize];
+			mbstowcs_s(0, wTemp, textLength, pszText, _TRUNCATE);
+
+			return std::wstring(wTemp);
+		}
+
 	};
 
 }

@@ -23,6 +23,12 @@ namespace MDNetwork
 	using LOBBY_LEAVE_USER_NTF_Func = std::function<void(PacketBodyPtr)>;
 	using PktLobbyLeaveUserInfoNtfQue = concurrency::concurrent_queue<PktLobbyLeaveUserInfoNtf>;
 
+	using LOBBY_CHAT_RES_Func = std::function<void(PacketBodyPtr)>;
+	using PktLobbyChatResQue = concurrency::concurrent_queue<short>;
+
+	using LOBBY_CHAT_NTF_Func = std::function<void(PacketBodyPtr)>;
+	using PktLobbyChatNtfQue = concurrency::concurrent_queue<PktLobbyChatNtf>;
+
 	class LobbyObserver
 	{
 	public:
@@ -64,6 +70,13 @@ namespace MDNetwork
 
 		PktLobbyLeaveUserInfoNtfQue* GetPktLobbyLeaveUserInfoNtfQue();
 
+		//로비 채팅
+		LOBBY_CHAT_RES_Func GetLOBBY_CHAT_RES_Func();
+		PktLobbyChatResQue* GetPktLobbyChatResQue();
+
+		LOBBY_CHAT_NTF_Func GetLOBBY_CHAT_NTF_Func();
+		PktLobbyChatNtfQue* GetPktLobbyChatNtfQue();
+
 	private:
 		//로비 리스트 요청
 		void NotifyLOBBY_LIST_RES(PacketBodyPtr pPacket);
@@ -99,5 +112,14 @@ namespace MDNetwork
 		void NotifyLOBBY_LEAVE_USER_NTF(PacketBodyPtr pPacket);
 
 		PktLobbyLeaveUserInfoNtfQue m_LobbyLeaveUserInfoNtfQue;
+
+		//로비 채팅
+		void NotifyLOBBY_CHAT_RES(PacketBodyPtr pPacket);
+
+		PktLobbyChatResQue m_LobbyChatResQue;
+
+		void NotifyLOBBY_CHAT_NTF(PacketBodyPtr pPacket);
+
+		PktLobbyChatNtfQue m_LobbyChatNtfQue;
 	};
 }

@@ -15,7 +15,7 @@ namespace MDNetwork
 	{
 	public:
 		NetworkInterface() = default;
-		~NetworkInterface() = default;
+		~NetworkInterface();
 
 		void run();
 
@@ -25,7 +25,10 @@ namespace MDNetwork
 
 		void SetRawPacketQue(GetFromNetworkQue * pQue);
 
+		void SetIsEnd();
+
 	private:
+		bool IsEnd = false;
 
 		void Broadcast(short pId, short pSize, char* pData);
 

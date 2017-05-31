@@ -156,7 +156,7 @@ namespace MDNetwork
 				m_data->m_LobbyInfo.RoomCount = RoomNum;
 				m_data->m_LobbyInfo.UserCount = UserNum;
 
-				changeScene(L"ChatMain");
+				changeScene(L"Chennel");
 			}
 
 			m_NumOfCheckingForIsAllowed = ++m_NumOfCheckingForIsAllowed;

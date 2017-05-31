@@ -98,6 +98,8 @@ namespace MDNetwork
 		//윈도우 소켓 리소스를 반환한다.
 		WSACleanup();
 
+		m_Thead.join();
+
 		return MyReturnVal::ResultOK;
 	}
 

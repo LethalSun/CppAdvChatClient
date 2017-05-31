@@ -102,6 +102,32 @@ namespace MDNetwork
 		return &m_LobbyLeaveUserInfoNtfQue;
 	}
 
+	LOBBY_CHAT_RES_Func LobbyObserver::GetLOBBY_CHAT_RES_Func()
+	{
+		return [this](PacketBodyPtr pPacket)
+		{
+			NotifyLOBBY_CHAT_RES(pPacket);
+		};
+	}
+
+	PktLobbyChatResQue * LobbyObserver::GetPktLobbyChatResQue()
+	{
+		return &m_LobbyChatResQue;
+	}
+
+	LOBBY_CHAT_NTF_Func LobbyObserver::GetLOBBY_CHAT_NTF_Func()
+	{
+		return [this](PacketBodyPtr pPacket)
+		{
+			NotifyLOBBY_CHAT_NTF(pPacket);
+		};
+	}
+
+	PktLobbyChatNtfQue* LobbyObserver::GetPktLobbyChatNtfQue()
+	{
+		return &m_LobbyChatNtfQue;
+	}
+
 	void LobbyObserver::NotifyLOBBY_LIST_RES(PacketBodyPtr pPacket)
 	{
 		auto size = pPacket->PacketBodySize;
@@ -226,6 +252,33 @@ namespace MDNetwork
 		memcpy(pkt.UserID, data->UserID, MAX_USER_ID_SIZE);
 
 		m_LobbyLeaveUserInfoNtfQue.push(pkt);
+	}
+
+	void LobbyObserver::NotifyLOBBY_CHAT_RES(PacketBodyPtr pPacket)
+	{
+		auto size = pPacket->PacketBodySize;
+		auto id = pPacket->PacketId;
+		auto data = (MDNetwork::PktLobbyChatRes*)pPacket->PacketData;
+
+		m_LobbyChatResQue.push(id);
+	}
+
+	void LobbyObserver::NotifyLOBBY_CHAT_NTF(PacketBodyPtr pPacket)
+	{
+		auto size = pPacket->PacketBodySize;
+		auto id = pPacket->PacketId;
+		auto data = (MDNetwork::PktLobbyChatNtf*)pPacket->PacketData;
+
+		PktLobbyChatNtf pkt;
+		memcpy(pkt.UserID, data->UserID, MAX_USER_ID_SIZE + 1);
+
+		//char buffer[MAX_LOBBY_CHAT_MSG_SIZE + 1];
+		//Util::UnicodeToAnsi(data->Msg, MAX_LOBBY_CHAT_MSG_SIZE + 1, buffer);
+		//auto msg =  Util::CharToWstring(buffer);
+		//memcpy(pkt.Msg, msg.c_str(), MAX_LOBBY_CHAT_MSG_SIZE + 1);
+		
+		wmemcpy(pkt.Msg, data->Msg, MAX_LOBBY_CHAT_MSG_SIZE + 1);
+		m_LobbyChatNtfQue.push(pkt);
 	}
 
 

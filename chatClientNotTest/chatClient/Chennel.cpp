@@ -31,37 +31,49 @@ namespace MDNetwork
 
 		//방 리스트 받아오기
 		GetRoomList();
-		//멤버 리스트 받아오기
 
+		//멤버 리스트 받아오기
+		GetUserList();
+		SetUserList();
 		//roomInfos.reserve(20);
 	}
 
 	void Chennel::update()
 	{
+		SetRoomList();
+	
 		//입장 공지 확인
 		CheckNewMenber();
 
 		SetNewUser();
 		
 		//퇴장 공지 확인
+		CheckLeavedMember();
+
+		RemoveUser();
 
 		//방정보 갱신 확인
 
+
 		//채팅 확인
-		
+		GetTextFromInput();
 
 		CheckRoomListButton();
+
+		//방에 입장,로비 퇴장
 		if (m_RoomId > 0 && m_RoomId <= 5)
 		{
-			GetMemberList();
-			SetMemberList();
 
 		}
 		else
 		{
+
 		}
-		//처음 받아오 방,멤버의 리스트 갱신된 리스트를 표시하는 함수.
+
+		//방,멤버의 리스트 갱신표시하는 함수.
 		UpdateLobbyMember();
+		UpdateLobbyRoom();
+		//메시지를 갱신한다.
 		updateTextField();
 
 
@@ -69,66 +81,97 @@ namespace MDNetwork
 
 	int Chennel::updateTextField()
 	{
-		inputWindow.textArea(L"InputField").enabled = true;
-		showWindow.textArea(L"ShowField").enabled = true;
 		showWindow.textArea(L"ShowField").setText(m_PresentText);
-		if (inputWindow.textArea(L"InputField").hasChanged)
-		{
-			auto str = inputWindow.textArea(L"InputField")._get_text();
-			if (str.endsWith(L'\n'))
-			{
-				m_PresentText = m_PresentText + str;
-				inputWindow.textArea(L"InputField").setText(L"");
-			}
-		}
-
 		return 0;
 	}
 
 	int Chennel::SetRoomList()
 	{
-		//if (IsRoomSeted)
-		//{
-		//	for (int i = 0; i < 20; ++i)
-		//	{
-		//		roomWindow.text(m_RoomIndex[i]).text = roomInfos[i].RoomTitle;
-		//	}
-		//
-		//	IsRoomSeted = true;
-		//}
-		//
+		auto lastRoomindex = m_data->m_Logic->TryGetRoomList();
+
+		for (int i = 0; i <= lastRoomindex; ++i)
+		{
+			std::wstring buffer;
+			auto roomInfo = m_data->m_Logic->CopyRoomList(buffer);
+			short index, count;
+
+
+			std::tie(index, count) = roomInfo;
+
+			m_RoomList[i].RoomIndex = index;
+			m_RoomList[i].UserCount = count;
+			m_RoomList[i].Title = buffer;
+		}
 		return 0;
 	}
 
 	int Chennel::UpdateLobbyMember()
 	{
-
-		memberWindow.text(L"Member1").text = m_members[0].MenberId;
-		memberWindow.text(L"Member2").text = m_members[1].MenberId;
-		memberWindow.text(L"Member3").text = m_members[2].MenberId;
-		memberWindow.text(L"Member4").text = m_members[3].MenberId;
-		memberWindow.text(L"Member5").text = m_members[4].MenberId;
-
+		int i = 0;
+		for (auto user : m_MemberList)
+		{
+			if (!user.IsEmpty)
+			{
+				SetGuiText(memberWindow, m_MemberIndex[i], user.MenberId);
+			}
+			++i;
+		}
 		return 0;
 	}
 
-	int Chennel::GetMemberList()
+	int Chennel::UpdateLobbyRoom()
 	{
-		//서버로 부터 멤버 리스트를 받아온다.
-		//변화가 있는지 확인을 해야됨
+		int i = 0;
+		for (auto room : m_RoomList)
+		{
+			if (room.RoomIndex != -1)
+			{
+				auto id = room.RoomIndex;
+				auto title = room.Title;
+				auto usercount = room.UserCount;
+
+				String newStr = Format(m_RoomIndex[i], title, usercount, L"/4", L"[", id, L"]");
+
+				SetGuiText(roomWindow, m_RoomIndex[i], newStr);
+			}
+		}
 		return 0;
 	}
 
-	int Chennel::SetMemberList()
+	void Chennel::GetTextFromInput()
 	{
-		SetGuiText(memberWindow, L"Member1", L"person1");
-		SetGuiText(memberWindow, L"Member2", L"person2");
-		SetGuiText(memberWindow, L"Member3", L"person3");
-		SetGuiText(memberWindow, L"Member4", L"person4");
-		SetGuiText(memberWindow, L"Member5", L"person5");
+		inputWindow.textArea(L"InputField").enabled = true;
+		showWindow.textArea(L"ShowField").enabled = true;
+		showWindow.textArea(L"ShowField").setText(m_PresentText);
 
-		return 0;
+		if (inputWindow.textArea(L"InputField").hasChanged)
+		{
+			auto str = inputWindow.textArea(L"InputField")._get_text();
+			if (str.endsWith(L'\n'))
+			{
+				m_data->m_Logic->SendPktLobbyChatReq(str.c_str());
+				inputWindow.textArea(L"InputField").setText(L"");
+			}
+		}
+
+		m_data->m_Logic->CollectMsg();
+
+		std::wstring buffer;
+
+		m_data->m_Logic->GetMsg(buffer);
+
+		String msg = buffer;
+
+		if (m_PresentText.endsWith(L'\n'))
+		{
+			m_PresentText += msg;
+		}
+		else
+		{
+			m_PresentText += L'\n' + msg;
+		}
 	}
+
 	int Chennel::CheckRoomListButton()
 	{
 		for (int i = 0; i < 5; ++i)
@@ -157,9 +200,8 @@ namespace MDNetwork
 
 		if (*m_NewUser != '\0')
 		{
-			wchar_t buffer[MAX_USER_ID_SIZE + 1];
-			Util::AnsiToUnicode(m_NewUser, MAX_USER_ID_SIZE + 1, buffer);
-			m_NewUserId.push_back(buffer);
+			auto id = Util::CharToWstring(m_NewUser).c_str();
+			m_NewUserId.push_back(id);
 
 			return true;
 		}
@@ -185,25 +227,69 @@ namespace MDNetwork
 		}
 	}
 
+	bool Chennel::CheckLeavedMember()
+	{
+		m_data->m_Logic->IsThereLevedUser();
+		char m_LevedUser[MAX_USER_ID_SIZE + 1];
+		m_data->m_Logic->GetLevedUser(m_LevedUser);
+
+		if (*m_LevedUser != '\0')
+		{
+			auto id = Util::CharToWstring(m_LevedUser).c_str();
+			m_LeavedUserId.push_back(id);
+
+			return true;
+		}
+
+		return false;
+	}
+
+	void Chennel::RemoveUser()
+	{
+
+		while (!m_LeavedUserId.empty())
+		{
+			for (auto user : m_MemberList)
+			{
+				if (!user.IsEmpty)
+				{
+					if (user.MenberId == m_LeavedUserId.front())
+					{
+						m_LeavedUserId.pop_front();
+						user.IsEmpty = true;
+						user.MenberId.clear();
+					}
+				}
+			}
+		}
+	}
+
 	int Chennel::GetRoomList()
 	{
 		m_data->m_Logic->SendPktRoomList(0);
-
-		auto lastRoomindex = m_data->m_Logic->TryGetRoomList();
-
-		for (int i = 0; i <= lastRoomindex; ++i)
-		{
-			auto roomInfo = m_data->m_Logic->CopyRoomList();
-			short index, count;
-			String title;
-
-			std::tie(index, count, title) = roomInfo;
-
-			m_RoomList[i].RoomIndex = index;
-			m_RoomList[i].RoomUserCount = count;
-			m_RoomList[i].RoomTitle = title;
-		}
 		
+		return 0;
+	}
+
+	int Chennel::GetUserList()
+	{
+		//m_data->m_Logic->SendPktLobbyUserList(0);
+
+		return 0;
+	}
+
+	int Chennel::SetUserList()
+	{
+		auto lastUserIndex = m_data->m_Logic->TryGetUserList();
+
+		for (int i = 0; i <= lastUserIndex; ++i)
+		{
+			std::wstring buffer;
+			auto userinfo = m_data->m_Logic->CopyUserList(buffer);
+
+				m_MemberList[i].MenberId = buffer;
+				m_MemberList[i].IsEmpty = false;
+		}
 		return 0;
 	}
 
@@ -222,6 +308,7 @@ namespace MDNetwork
 		auto dWindowPos = inputWindow.getRect();
 
 		inputWindow.setPos(Point(pos.x + dPos.w, WindowPos.y - dWindowPos.h));
+		inputWindow.textArea(L"InputField").enabled = true;
 
 		return 1;
 	}
@@ -234,7 +321,7 @@ namespace MDNetwork
 		showWindow.setTitle(Format(L"Channel ID:", m_data->m_LobbyInfo.LobbyId));
 		showWindow.addln(L"ShowField", GUITextArea::Create(25, 30));
 		showWindow.setPos(Point(pos.x + dPos.w, 0));
-
+		showWindow.textArea(L"ShowField").enabled = true;
 		return 1;
 	}
 

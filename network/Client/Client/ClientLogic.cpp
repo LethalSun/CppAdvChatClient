@@ -27,13 +27,15 @@ namespace MDNetwork
 		if (m_LoginState == 0)
 		{
 
-
 			MDNetwork::PktLogInReq loginPacket{ 0, };
 			strncpy_s(loginPacket.szID, MDNetwork::MAX_USER_ID_SIZE + 1, pID, MDNetwork::MAX_USER_ID_SIZE);
 			strncpy_s(loginPacket.szPW, MDNetwork::MAX_USER_PASSWORD_SIZE + 1, pPW, MDNetwork::MAX_USER_PASSWORD_SIZE);
 
 
 
+			m_ID = Util::CharToWstring(pID);
+			m_Pw = Util::CharToWstring(pPW);
+			
 			returnVal = m_SendFunc(
 				(short)MDNetwork::PACKET_ID::LOGIN_IN_REQ, 
 				sizeof(loginPacket), 
@@ -256,6 +258,7 @@ namespace MDNetwork
 	{
 		if (m_NewUser[0] == '\0')
 		{
+			pNewUserId[0] = '\0';
 			return;
 		}
 		else
@@ -269,7 +272,7 @@ namespace MDNetwork
 	int ClientLogic::SendPktRoomList(short pStartIndex)
 	{
 		auto returnVal = -1;
-		if (pStartIndex = 0)
+		if (pStartIndex == 0)
 		{
 			MDNetwork::PktLobbyRoomListReq pkt;
 
@@ -318,7 +321,7 @@ namespace MDNetwork
 				SendPktRoomList(LastRoomIndex);
 			}
 
-			if (OnLOBBY_ENTER_ROOM_LIST_RES())
+			if (!OnLOBBY_ENTER_ROOM_LIST_RES())
 			{
 				break;
 			}
@@ -328,13 +331,24 @@ namespace MDNetwork
 		return LastRoomIndex;
 	}
 
-	RoomRetInfo ClientLogic::CopyRoomList()
+	RoomRetInfo ClientLogic::CopyRoomList(std::wstring &pBuffer)
 	{
 
+		if (RoomList.empty())
+		{
+			return RoomRetInfo();
+		}
 		auto room = RoomList.front();
 		RoomList.pop_front();
 
-		auto ret = std::make_tuple(room.RoomIndex, room.RoomUserCount, room.RoomTitle);
+		auto ret = std::make_tuple(room.RoomIndex, room.RoomUserCount);
+
+		char buffer[MAX_ROOM_TITLE_SIZE + 1];
+
+		
+		
+
+		pBuffer = room.RoomTitle;
 
 		return ret;
 
@@ -343,7 +357,7 @@ namespace MDNetwork
 	int ClientLogic::SendPktLobbyUserList(short pStartIndex)
 	{
 		auto returnVal = -1;
-		if (pStartIndex = 0)
+		if (pStartIndex == 0)
 		{
 			MDNetwork::PktLobbyUserListReq pkt;
 
@@ -392,7 +406,7 @@ namespace MDNetwork
 				SendPktLobbyUserList(LastUserIndex);
 			}
 
-			if (OnLOBBY_ENTER_USER_LIST_RES())
+			if (!OnLOBBY_ENTER_USER_LIST_RES())
 			{
 				break;
 			}
@@ -402,14 +416,18 @@ namespace MDNetwork
 		return LastRoomIndex;
 	}
 
-	UserRetInfo ClientLogic::CopyUserList()
+	short ClientLogic::CopyUserList(std::wstring &pBuffer)
 	{
+		if (UserList.empty())
+		{
+			return -1;
+		}
 		auto user = UserList.front();
 		UserList.pop_front();
 
-		auto ret = std::make_tuple(user.LobbyUserIndex, user.UserID);
+		pBuffer = user.UserID;
 
-		return ret;
+		return user.LobbyUserIndex;
 	}
 
 	int ClientLogic::SendPktLobbyLeave()
@@ -458,11 +476,10 @@ namespace MDNetwork
 
 			for (int i = 0; i < 32; ++i)
 			{
-				UserSmallInfo userInfo;
+				userSmallInfo userInfo;
 
 				userInfo.LobbyUserIndex = pkt.UserInfo[i].LobbyUserIndex;
-
-				memcpy(userInfo.UserID, pkt.UserInfo[i].UserID, MAX_USER_ID_SIZE + 1);
+				userInfo.UserID = Util::CharToWstring(pkt.UserInfo[i].UserID);
 
 				UserList.push_back(userInfo);
 			}
@@ -474,6 +491,8 @@ namespace MDNetwork
 	bool ClientLogic::OnLOBBY_ENTER_ROOM_LIST_RES()
 	{
 		PktLobbyRoomListRes pkt;
+		pkt.IsEnd = false;
+
 		if (m_LobbyRoomListQue->try_pop(pkt))
 		{
 			auto error = pkt.ErrorCode;
@@ -485,17 +504,13 @@ namespace MDNetwork
 
 			for (int i = 0; i < 12; ++i)
 			{
-				RoomSmallInfo roomInfo;
+				roomSmallInfo roomInfo;
 			
 				roomInfo.RoomIndex = pkt.RoomInfo[i].RoomIndex;
 				
 				roomInfo.RoomUserCount = pkt.RoomInfo[i].RoomUserCount;
 			
-				char buffer[MAX_ROOM_TITLE_SIZE + 1];
-				
-				Util::UnicodeToAnsi(pkt.RoomInfo[i].RoomTitle, MAX_ROOM_TITLE_SIZE + 1, buffer);
-				
-				Util::AnsiToUnicode(buffer, MAX_ROOM_TITLE_SIZE + 1, roomInfo.RoomTitle);
+				roomInfo.RoomTitle = pkt.RoomInfo[i].RoomTitle;
 
 				RoomList.push_back(roomInfo);
 			}
@@ -521,6 +536,7 @@ namespace MDNetwork
 	{
 		if (m_LeavedUser[0] == '\0')
 		{
+			pNewUserId[0] = '\0';
 			return;
 		}
 		else
@@ -529,6 +545,92 @@ namespace MDNetwork
 			m_LeavedUser[0] = '\0';
 			return;
 		}
+	}
+
+	int ClientLogic::SendPktLobbyChatReq(std::wstring  pMsg)
+	{
+		int retValue;
+		PktLobbyChatReq pkt;
+
+		memcpy(pkt.Msg, pMsg.c_str(), MAX_LOBBY_CHAT_MSG_SIZE);
+		
+		m_MyMsgQue.push_back(pMsg);
+
+		retValue = m_SendFunc(static_cast<short>(MDNetwork::PACKET_ID::LOBBY_CHAT_REQ),
+			sizeof(pkt),
+			(char*)&pkt);
+
+		return retValue;
+	}
+
+	int ClientLogic::SetLOBBY_CHAT_RES(PktLobbyChatResQue * pQue)
+	{
+		m_LobbyChatResQue = pQue;
+
+		return 0;
+	}
+
+	int ClientLogic::SetLOBBY_CHAT_NTF(PktLobbyChatNtfQue * pQue)
+	{
+		m_LobbyChatNtfQue = pQue;
+		return 0;
+	}
+
+	int ClientLogic::GetMsg(std::wstring &pMgs)
+	{
+		int retValue = 0;
+
+		if (m_MsgQue.empty())
+		{
+			pMgs[0] = '\0';
+			return retValue;
+		}
+
+		auto msg = m_MsgQue.front();
+		
+		m_MsgQue.pop_front();
+		
+		pMgs = msg;
+
+		retValue = m_MsgQue.size();
+
+		return retValue;
+	}
+
+	int ClientLogic::CollectMsg()
+	{
+		short pktId;
+		while (m_LobbyChatResQue->try_pop(pktId))
+		{
+			if (!m_MyMsgQue.empty())
+			{
+				auto myMsg = m_MyMsgQue.front();
+
+				std::wstring id = m_ID;
+				std::wstring msg = myMsg;
+				std::wstring col = L":\n";
+
+				msg = id + col + msg;
+
+				m_MsgQue.push_back(msg);
+				m_MyMsgQue.pop_front();
+			}	
+		}
+
+		PktLobbyChatNtf pkt;
+
+		while (m_LobbyChatNtfQue->try_pop(pkt))
+		{
+
+			std::wstring id = Util::CharToWstring(pkt.UserID);;
+			std::wstring msg = pkt.Msg;
+			std::wstring col = L":\n";
+			msg = id + col +msg;
+
+			m_MsgQue.push_back(msg);
+		}
+
+		return 0;
 	}
 
 }

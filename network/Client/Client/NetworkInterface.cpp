@@ -3,6 +3,10 @@
 
 namespace MDNetwork
 {
+	NetworkInterface::~NetworkInterface()
+	{
+		m_Thead.join();
+	}
 	void NetworkInterface::run()
 	{
 		m_Thead = std::thread([this]() {  PacketProcessThreadFunction(); });
@@ -29,6 +33,11 @@ namespace MDNetwork
 	void NetworkInterface::SetRawPacketQue(GetFromNetworkQue* pQue)
 	{
 		m_RawPacketQue = pQue;
+	}
+
+	void NetworkInterface::SetIsEnd()
+	{
+		IsEnd =  true;
 	}
 
 	void NetworkInterface::Broadcast(short pId, short pSize, char * pData)
@@ -71,6 +80,11 @@ namespace MDNetwork
 				auto packet = (PacketHeder*)rawPacket.get();
 
 				Broadcast(packet->Id, packet->BodySize, &rawPacket.get()[PACKET_HEADER_SIZE]);
+			}
+
+			if (IsEnd)
+			{
+				break;
 			}
 			
 		}

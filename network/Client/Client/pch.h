@@ -13,6 +13,7 @@
 #include <concurrent_unordered_map.h>
 #include <algorithm>
 #include <functional>
+#include <string>
 #include "Util.h"
 #include "Packet.h"
 #include "PacketID.h"

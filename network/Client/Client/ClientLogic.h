@@ -2,6 +2,19 @@
 
 namespace MDNetwork
 {
+	struct roomSmallInfo
+	{
+		short RoomIndex;
+		short RoomUserCount;
+		std::wstring RoomTitle;
+	};
+
+	struct userSmallInfo
+	{
+		short LobbyUserIndex;
+		std::wstring UserID;
+	};
+
 	class SocketNetwork;
 
 	using SendFunc = std::function<int(const short, const short, char*)>;
@@ -22,19 +35,26 @@ namespace MDNetwork
 
 	using PktLobbyLeaveUserInfoNtfQue = concurrency::concurrent_queue<PktLobbyLeaveUserInfoNtf>;
 	
+	using PktLobbyChatResQue = concurrency::concurrent_queue<short>;
+
+	using PktLobbyChatNtfQue = concurrency::concurrent_queue<PktLobbyChatNtf>;
+
 	using ChennelInfo = std::tuple<short, short>;
 
 	using MaxUserAndRoom = std::tuple<short, short>;
 
 	using ChennelListArr = std::array<std::tuple<short, short>, MAX_LOBBY_LIST_COUNT>;
 
-	using RoomListQue = std::deque<RoomSmallInfo>;
+	using RoomListQue = std::deque<roomSmallInfo>;
 		
-	using UserListQue = std::deque<UserSmallInfo>;
+	using UserListQue = std::deque<userSmallInfo>;
 
-	using RoomRetInfo = std::tuple<short, short, wchar_t*>;
-	
-	using UserRetInfo = std::tuple<short, char*>;
+	using RoomRetInfo = std::tuple<short, short>;
+
+	using MyMsgQue = std::deque<std::wstring>;
+
+	using MsgQue = std::deque<std::wstring>;
+
 
 	class ClientLogic
 	{
@@ -105,7 +125,7 @@ namespace MDNetwork
 		int TryGetRoomList();
 		
 		//방의 리스트를 복사하는 함수
-		RoomRetInfo CopyRoomList();
+		RoomRetInfo CopyRoomList(std::wstring &pBuffer);
 
 
 		//--++채널 유저 리스트 요청
@@ -119,7 +139,7 @@ namespace MDNetwork
 		//유저의 리스트를 받아오는 함수
 		int TryGetUserList();
 
-		UserRetInfo CopyUserList();
+		short CopyUserList(std::wstring &pBuffer);
 
 
 		//--++채널 떠나기
@@ -141,7 +161,20 @@ namespace MDNetwork
 		bool IsThereLevedUser();
 
 		void GetLevedUser(char * pNewUserId);
+
+
 		//--++로비 채팅
+		//로비 채팅 패킷 보내는 함수
+		int SendPktLobbyChatReq(std::wstring pMsg);
+
+		//옵저버로 부터 큐 받아오는 함수
+		int SetLOBBY_CHAT_RES(PktLobbyChatResQue* pQue);
+
+		int SetLOBBY_CHAT_NTF(PktLobbyChatNtfQue* pQue);
+
+		int GetMsg(std::wstring &pMgs);
+
+		int CollectMsg();
 
 		//--++방 입장 요청
 
@@ -163,9 +196,9 @@ namespace MDNetwork
 
 		//--++로그인 
 		//관련 변수
-		char m_ID[MAX_USER_PASSWORD_SIZE + 1]{ 0, };
+		std::wstring m_ID;
 
-		char m_Pw[MAX_USER_PASSWORD_SIZE + 1]{ 0, };
+		std::wstring m_Pw;
 
 		short m_LoginState = 0;
 
@@ -205,7 +238,7 @@ namespace MDNetwork
 		//관련변수
 		LobbyNewUserInfoNtfQue* m_LobbyNewUserQue;
 
-		char m_NewUser[MAX_USER_ID_SIZE + 1];
+		char m_NewUser[MAX_USER_ID_SIZE + 1]{'\0',};
 		//함수
 		bool OnLOBBY_ENTER_USER_NTF();
 
@@ -230,10 +263,11 @@ namespace MDNetwork
 
 		short LastUserIndex = 0;
 
-		short LastUserListMemory = 0;
+		short LastUserListMemory = -1;
 		//함수
 		bool OnLOBBY_ENTER_USER_LIST_RES();
 
+		bool m_isEnd{ false };
 		//--++채널 떠나기
 		//관련 변수
 		PktLobbyLeaveResQue* m_LobbyLeaveQue;
@@ -247,11 +281,18 @@ namespace MDNetwork
 		//--++퇴장 공지
 		PktLobbyLeaveUserInfoNtfQue* m_LobbyLeaveNtfQue;
 
-		char m_LeavedUser[MAX_USER_ID_SIZE + 1];
+		char m_LeavedUser[MAX_USER_ID_SIZE + 1]{ '\0' ,};
 
 		bool OnLOBBY_LEAVE_USER_NTF();
 
 		//--++로비 채팅
+		PktLobbyChatResQue* m_LobbyChatResQue;
+
+		PktLobbyChatNtfQue* m_LobbyChatNtfQue;
+		
+		MsgQue m_MsgQue;
+
+		MyMsgQue m_MyMsgQue;
 
 		//--++방 입장 요청
 

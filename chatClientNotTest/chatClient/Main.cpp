@@ -53,7 +53,8 @@ void Main()
 		loginObserver.GetLOGIN_IN_RES_Func());
 
 	//등록:로직->옵저버
-	logic.SetLOGIN_IN_RES_Que(loginObserver.GetLOGIN_IN_RES_Que());
+	logic.SetLOGIN_IN_RES_Que(
+		loginObserver.GetLOGIN_IN_RES_Que());
 
 
 	//--옵저버:LOBBY_LIST_RES
@@ -65,7 +66,8 @@ void Main()
 		lobbyObserver.GetLOBBY_LIST_RES_Func());
 
 	//등록:로직->옵저버
-	logic.SetLOBBY_LIST_RES_Que(lobbyObserver.GetLOBBY_LIST_RES_Que());
+	logic.SetLOBBY_LIST_RES_Que(
+		lobbyObserver.GetLOBBY_LIST_RES_Que());
 
 
 	//--옵저버:LOBBY_ENTER_RES
@@ -76,7 +78,8 @@ void Main()
 		lobbyObserver.GetLOBBY_ENTER_RES_Func());
 
 	//등록:로직->옵저버
-	logic.SetLOBBY_ENTER_RES_Que(lobbyObserver.GetLOBBY_ENTER_RES_Que());
+	logic.SetLOBBY_ENTER_RES_Que(
+		lobbyObserver.GetLOBBY_ENTER_RES_Que());
 
 
 	//--옵저버:LOBBY_ENTER_USER_NTF
@@ -87,7 +90,8 @@ void Main()
 		lobbyObserver.GetLOBBY_ENTER_USER_NTF_Func());
 
 	//등록:로직->옵저버
-	logic.SetLOBBY_ENTER_USER_NTF_Que(lobbyObserver.GetLOBBY_ENTER_USER_NTF_Que());
+	logic.SetLOBBY_ENTER_USER_NTF_Que(
+		lobbyObserver.GetLOBBY_ENTER_USER_NTF_Que());
 	
 	
 	//--옵저버:LOBBY_ENTER_ROOM_LIST_RES
@@ -98,42 +102,74 @@ void Main()
 		lobbyObserver.GetLOBBY_ENTER_ROOM_LIST_RES_Func());
 
 	//등록:로직->옵저버
+	logic.SetLOBBY_ENTER_ROOM_LIST_RES_Que(
+		lobbyObserver.GetPktLobbyRoomListResQue());
 
-
+	
 	//--옵저버:LOBBY_ENTER_USER_LIST_RES
+	
 	//등록:옵저버->서브젝트
 	networkInterface.Subscribe(static_cast<short>(
 		MDNetwork::PACKET_ID::LOBBY_ENTER_USER_LIST_RES),
 		lobbyObserver.GetLOBBY_ENTER_USER_LIST_RES_Func());
 	//등록:로직->옵저버
-
+	logic.SetLOBBY_ENTER_USER_LIST_RES_Que(
+		lobbyObserver.GetPktLobbyUserListResQue());
+	
 	
 	//--옵저버:LOBBY_LEAVE_RES
+	
 	//등록:옵저버->서브젝트
 	networkInterface.Subscribe(static_cast<short>(
 		MDNetwork::PACKET_ID::LOBBY_LEAVE_RES),
 		lobbyObserver.GetLOBBY_LEAVE_RES_Func());
 	//등록:로직->옵저버
-
+	logic.SetLOBBY_LEAVE_RES_Que(
+		lobbyObserver.GetPktLobbyLeaveResQue());
+	
 	
 	//--옵저버:LOBBY_LEAVE_USER_NTF
+	
 	//등록:옵저버->서브젝트
 	networkInterface.Subscribe(static_cast<short>(
 		MDNetwork::PACKET_ID::LOBBY_LEAVE_USER_NTF),
 		lobbyObserver.GetLOBBY_LEAVE_USER_NTF_Func());
+	
 	//등록:로직->옵저버
+	logic.SetLOBBY_LEAVE_USER_NTF(
+		lobbyObserver.GetPktLobbyLeaveUserInfoNtfQue());
 
 
-	//옵저버:
+	//--++옵저버:LOBBY_CHAT_RES
+
+	//등록:옵저버->서브젝트
+	networkInterface.Subscribe(static_cast<short>(
+		MDNetwork::PACKET_ID::LOBBY_CHAT_RES),
+		lobbyObserver.GetLOBBY_CHAT_RES_Func());
+	//등록:로직->옵저버
+	logic.SetLOBBY_CHAT_RES(
+		lobbyObserver.GetPktLobbyChatResQue());
+
+	//--++옵저버:LOBBY_CHAT_NTF
+
+	//등록:옵저버->서브젝트
+	networkInterface.Subscribe(static_cast<short>(
+		MDNetwork::PACKET_ID::LOBBY_CHAT_NTF),
+		lobbyObserver.GetLOBBY_CHAT_NTF_Func());
+	//등록:로직->옵저버
+	logic.SetLOBBY_CHAT_NTF(
+		lobbyObserver.GetPktLobbyChatNtfQue());
+
+	//--++옵저버:
 	//등록:옵저버->서브젝트
 	//등록:로직->옵저버
 
 	//Siv3D 신 관리 매니저.
 	Manager manager;
-	manager.add<MDNetwork::Chennel>(L"Chennel");
+	
 	manager.add<MDNetwork::Login>(L"Login");
 	manager.add<MDNetwork::Lobby>(L"Lobby");
-	
+	manager.add<MDNetwork::Chennel>(L"Chennel");
 	manager.add<MDNetwork::ChatMain>(L"ChatMain");
 	manager.get()->m_Logic = &logic;
 	while (System::Update())
@@ -143,4 +179,6 @@ void Main()
 			break;
 		}
 	}
+
+	networkInterface.SetIsEnd();
 }
