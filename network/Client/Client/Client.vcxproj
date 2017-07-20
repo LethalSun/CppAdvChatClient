@@ -132,6 +132,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ChatClientData.h" />
     <ClInclude Include="ClientLogic.h" />
     <ClInclude Include="ErrorCode.h" />
     <ClInclude Include="LobbyObserver.h" />
@@ -140,6 +141,7 @@
     <ClInclude Include="NetworkInterface.h" />
     <ClInclude Include="Packet.h" />
     <ClInclude Include="PacketID.h" />
+    <ClInclude Include="PacketProcessor.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="RoomObserver.h" />
     <ClInclude Include="SocketNetwork.h" />
@@ -147,11 +149,13 @@
     <ClInclude Include="Util.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ChatClientData.cpp" />
     <ClCompile Include="ClientLogic.cpp" />
     <ClCompile Include="LobbyObserver.cpp" />
     <ClCompile Include="LoginObserver.cpp" />
     <ClCompile Include="Network.cpp" />
     <ClCompile Include="NetworkInterface.cpp" />
+    <ClCompile Include="PacketProcessor.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
